@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { RegisterComponent } from './register.component';
+import { By } from '@angular/platform-browser';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -19,5 +19,10 @@ describe('RegisterComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have a disabled submit button if the form is invalid', () => {
+    const submitButton = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
+    expect(submitButton.disabled).toBeTrue();
   });
 });
