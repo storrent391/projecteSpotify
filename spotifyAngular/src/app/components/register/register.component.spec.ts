@@ -25,4 +25,16 @@ describe('RegisterComponent', () => {
     const submitButton = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
     expect(submitButton.disabled).toBeTrue();
   });
+  it('should enable the submit button when the form is valid', () => {
+    component.registerForm.setValue({
+      username: 'testuser',
+      email: 'test@example.com',
+      password: 'Password123',
+      confirmPassword: 'Password123',
+    });
+    fixture.detectChanges();
+  
+    const submitButton = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
+    expect(submitButton.disabled).toBeFalse();
+  });
 });
