@@ -55,6 +55,19 @@ describe('LoginComponent', () => {
     expect(password.valid).toBeTrue();
   });
 
+  it('should call AuthService login on valid form submission', fakeAsync(() => {
+    const email = 'test@example.com';
+    const password = 'password123';
+    component.loginForm.setValue({ email, password });
+
+    authServiceSpy.login.and.returnValue(of({ success: true }));
+    component.onSubmit();
+
+    expect(authServiceSpy.login).toHaveBeenCalledOnceWith(email, password);
+    tick();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+  }));
+
 
   it('should disable the submit button when the form is invalid', () => {
     const button = fixture.nativeElement.querySelector('button[type="submit"]');
