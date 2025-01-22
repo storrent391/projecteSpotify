@@ -21,5 +21,5 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
   { path: '404', component: NotFoundComponent },
-  { path: '**', redirectTo: '/404' },  // Redirige a la página 404 si la ruta no es encontrada
+  { path: '**', redirectTo: '/404' },
 ];

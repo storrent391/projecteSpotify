@@ -34,6 +34,28 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should validate email and password fields', () => {
+    const email = component.loginForm.controls['email'];
+    const password = component.loginForm.controls['password'];
+
+    // Email validation
+    email.setValue('');
+    expect(email.valid).toBeFalse();
+    email.setValue('invalid-email');
+    expect(email.valid).toBeFalse();
+    email.setValue('test@example.com');
+    expect(email.valid).toBeTrue();
+
+    // Password validation
+    password.setValue('');
+    expect(password.valid).toBeFalse();
+    password.setValue('123');
+    expect(password.valid).toBeFalse();
+    password.setValue('123456');
+    expect(password.valid).toBeTrue();
+  });
+
+
   it('should disable the submit button when the form is invalid', () => {
     const button = fixture.nativeElement.querySelector('button[type="submit"]');
     expect(button.disabled).toBeTrue();
