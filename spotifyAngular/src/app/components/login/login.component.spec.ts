@@ -1,5 +1,6 @@
 import { TestBed, ComponentFixture, fakeAsync, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -17,8 +18,11 @@ describe('LoginComponent', () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [LoginComponent],
+      imports: [
+        LoginComponent, // Add the standalone component here
+        ReactiveFormsModule,
+        HttpClientTestingModule,
+      ],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
         { provide: Router, useValue: routerSpy },
@@ -32,6 +36,10 @@ describe('LoginComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have an invalid form initially', () => {
+    expect(component.loginForm.valid).toBeFalse();
   });
 
   it('should validate email and password fields', () => {
@@ -68,6 +76,18 @@ describe('LoginComponent', () => {
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
   }));
 
+  it('should handle login failure', fakeAsync(() => {
+    const email = 'test@example.com';
+    const password = 'wrongpassword';
+    component.loginForm.setValue({ email, password });
+
+    authServiceSpy.login.and.returnValue(throwError(() => new Error('Invalid credentials')));
+    component.onSubmit();
+
+    expect(authServiceSpy.login).toHaveBeenCalledOnceWith(email, password);
+    tick();
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
+  }));
 
   it('should disable the submit button when the form is invalid', () => {
     const button = fixture.nativeElement.querySelector('button[type="submit"]');
