@@ -1,13 +1,5 @@
 const { poolPromise } = require("../config/db");
 
-class User {
-  constructor(id, username, password) {
-    this.id = id;
-    this.username = username;
-    this.password = password;
-  }
-}
-
 const getUserByEmail = async (email) => {
   try {
     const pool = await poolPromise;
@@ -40,4 +32,4 @@ const createUser = async ({ username, email, password }) => {
   }
 };
 
-module.exports = { getUserByEmail, createUser, User };
+module.exports = { getUserByEmail, createUser };
