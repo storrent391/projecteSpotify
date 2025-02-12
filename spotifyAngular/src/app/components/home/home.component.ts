@@ -1,11 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { SongService } from '../../services/song.service';
+import { Song } from '../../models/song.model';
 
 @Component({
   selector: 'app-home',
-  imports: [],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  songs: Song[] = [];
 
+  constructor(private songService: SongService) {}
+
+  ngOnInit(): void {
+    this.songService.getSongs().subscribe((songs) => {
+      this.songs = songs;
+    });
+  }
+
+  rateSong(songId: number, rating: number): void {
+    this.songService.rateSong(songId, rating).subscribe(() => {
+      this.songs = this.songs.map((song) =>
+        song.id === songId ? { ...song, rating } : song
+      );
+    });
+  }
 }
