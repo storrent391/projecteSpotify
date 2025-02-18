@@ -1,4 +1,4 @@
-import { poolPromise } from "../config/db.js";
+const { poolPromise } = require("../config/db");
 
 class Song {
   constructor(id, title, artist, userId) {
@@ -42,4 +42,4 @@ const deleteSong = async (id) => {
   await pool.request().input("Id", id).query("DELETE FROM Songs WHERE Id = @Id");
 };
 
-export { Song, getAllSongs, getSongById, createSong, deleteSong };
+module.exports = { Song, getAllSongs, getSongById, createSong, deleteSong };

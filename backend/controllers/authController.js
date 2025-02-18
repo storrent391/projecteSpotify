@@ -1,11 +1,9 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { getUserByEmail, createUser } from "../models/userModel.js";
-import dotenv from "dotenv";
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { getUserByEmail, createUser } = require("../models/userModel");
+require("dotenv").config();
 
-dotenv.config();
-
-export const register = async (req, res) => {
+const register = async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
@@ -22,7 +20,7 @@ export const register = async (req, res) => {
   }
 };
 
-export const login = async (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -41,3 +39,5 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Error al iniciar sessió", error });
   }
 };
+
+module.exports = { register, login };

@@ -1,6 +1,6 @@
-import { getAllSongs, getSongById, createSong, deleteSong } from "../models/songModel.js";
+const { getAllSongs, getSongById, createSong, deleteSong } = require("../models/songModel");
 
-export const getSongs = async (req, res) => {
+const getSongs = async (req, res) => {
   try {
     const songs = await getAllSongs();
     res.json(songs);
@@ -9,7 +9,7 @@ export const getSongs = async (req, res) => {
   }
 };
 
-export const getSong = async (req, res) => {
+const getSong = async (req, res) => {
   try {
     const song = await getSongById(req.params.id);
     if (!song) return res.status(404).json({ message: "Cançó no trobada" });
@@ -19,7 +19,7 @@ export const getSong = async (req, res) => {
   }
 };
 
-export const addSong = async (req, res) => {
+const addSong = async (req, res) => {
   const { title, artist } = req.body;
   if (!title || !artist) {
     return res.status(400).json({ message: "Tots els camps són obligatoris" });
@@ -33,7 +33,7 @@ export const addSong = async (req, res) => {
   }
 };
 
-export const removeSong = async (req, res) => {
+const removeSong = async (req, res) => {
   try {
     const song = await getSongById(req.params.id);
     if (!song) return res.status(404).json({ message: "Cançó no trobada" });
@@ -44,3 +44,5 @@ export const removeSong = async (req, res) => {
     res.status(500).json({ message: "Error en eliminar la cançó", error });
   }
 };
+
+module.exports = { getSongs, getSong, addSong, removeSong };
