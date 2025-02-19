@@ -13,15 +13,8 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.songService.getSongs().subscribe((songs) => {
-      this.songs = songs;
+      
     });
   }
 
-  rateSong(songId: number, rating: number): void {
-    this.songService.rateSong(songId, rating).subscribe(() => {
-      this.songs = this.songs.map((song) =>
-        song.id === songId ? { ...song, rating } : song
-      );
-    });
-  }
 }

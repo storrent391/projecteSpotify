@@ -1,0 +1,52 @@
+/* Estilos generales */
+h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Lista de canciones */
+  ul {
+    list-style: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  li {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin: 8px 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  li:hover {
+    background-color: #e3f2fd;
+    cursor: pointer;
+  }
+  
+  /* Mensaje cuando no hay canciones */
+  p {
+    text-align: center;
+    font-size: 18px;
+    color: #777;
+    font-style: italic;
+  }
+  
+  /* Responsive para móviles */
+  @media (max-width: 600px) {
+    li {
+      font-size: 16px;
+      padding: 8px 12px;
+    }
+  }
+  

@@ -1,1 +1,9 @@
-<p>song-list works!</p>
+<h2>Llista de Cançons</h2>
+<ul *ngIf="songs.length > 0; else noSongs">
+  <li *ngFor="let song of songs">
+    <strong>{{ song.Title }}</strong> - <span>{{ song.Artist }}</span>
+  </li>
+</ul>
+<ng-template #noSongs>
+  <p>No hay canciones disponibles.</p>
+</ng-template>
