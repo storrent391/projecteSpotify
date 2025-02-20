@@ -13,7 +13,7 @@ const dbConfig = {
   },
 };
 
-// Establece un pool de conexiones
+
 const poolPromise = sql
   .connect(dbConfig)
   .then((pool) => {
