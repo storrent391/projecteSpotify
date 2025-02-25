@@ -5,8 +5,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
 
 router.get("/", getSongs);
-router.get("/:id", getSong);
 router.get("/search", searchSongs);
+router.get("/:id", getSong);
 
 router.post("/", authMiddleware, addSong);
 router.put("/:id", authMiddleware, updateSongController);

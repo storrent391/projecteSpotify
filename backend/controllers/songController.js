@@ -83,14 +83,18 @@ const searchSongs = async (req, res) => {
     if (title) request.input("Title", sql.VarChar, `%${title}%`);
     if (artist) request.input("Artist", sql.VarChar, `%${artist}%`);
 
-    const result = await request.query(
-      "SELECT * FROM Songs WHERE (@Title IS NULL OR Title LIKE @Title) AND (@Artist IS NULL OR Artist LIKE @Artist)"
-    );
+    const result = await request.query(`
+      SELECT * FROM Songs
+      WHERE (@Title IS NULL OR Title LIKE '%' + @Title + '%')
+      AND (@Artist IS NULL OR Artist LIKE '%' + @Artist + '%')
+    `);
 
     res.json(result.recordset);
   } catch (error) {
+    console.error("Error en la cerca de cançons:", error);
     res.status(500).json({ message: "Error en la cerca de cançons", error });
   }
 };
+
 
 module.exports = { getSongs, getSong, addSong, updateSongController, removeSong, searchSongs };
