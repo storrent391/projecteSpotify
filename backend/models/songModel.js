@@ -89,5 +89,4 @@ const deleteSong = async (id) => {
   return result.rowsAffected[0];
 };
 
-module.exports = { getAllSongs, getSongByIdOrTitle, createSong, deleteSong, updateSong };
-
+module.exports = { Song, getAllSongs, getSongByIdOrTitle, createSong, updateSong, deleteSong };
