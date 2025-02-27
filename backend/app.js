@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const authRoutes = require("./routes/authRoutes");
 const songRoutes = require("./routes/songRoutes");
 const playlistRoutes = require("./routes/playlistRoutes");
-const errorHandler = require("./middlewares/errorHandler"); 
+const errorHandler = require("./middleware/errorHandler"); 
 
 dotenv.config();
 

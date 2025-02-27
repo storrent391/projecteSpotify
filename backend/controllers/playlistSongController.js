@@ -1,97 +1,42 @@
-const {
-  createPlaylist,
-  getAllPlaylists,
-  getPlaylistById,
-  updatePlaylist,
-  deletePlaylist,
-} = require("../models/playlistModel");
+const { addSongToPlaylist, removeSongFromPlaylist } = require("../models/playlistSongModel");
 
-const createPlaylistController = async (req, res) => {
-  const { name } = req.body;
-  const userId = req.user?.id; // Agafem l'ID de l'usuari autenticat
+const addSongToPlaylistController = async (req, res) => {
+  const { playlistId, songId } = req.body;
 
-  console.log("BODY REBUT:", req.body);
-  console.log("Usuari autenticat:", req.user);
+  console.log("Afegint cançó a la playlist:", { playlistId, songId });
 
-  if (!name) {
-    return res.status(400).json({ message: "El nom de la playlist és obligatori" });
+  if (!playlistId || !songId) {
+    return res.status(400).json({ message: "Cal proporcionar PlaylistId i SongId" });
   }
 
   try {
-    const newPlaylist = await createPlaylist({ name, userId });
-    res.status(201).json(newPlaylist);
+    const addedSong = await addSongToPlaylist(playlistId, songId);
+    res.status(201).json(addedSong);
   } catch (error) {
-    console.error("Error en crear la playlist:", error);
-    res.status(500).json({ message: "Error en crear la playlist", error });
+    console.error("Error en afegir la cançó a la playlist:", error);
+    res.status(500).json({ message: "Error en afegir la cançó a la playlist", error });
   }
 };
 
-const getPlaylistsController = async (req, res) => {
-  try {
-    const playlists = await getAllPlaylists();
-    res.json(playlists);
-  } catch (error) {
-    console.error("Error en obtenir les playlists:", error);
-    res.status(500).json({ message: "Error en obtenir les playlists", error });
+const removeSongFromPlaylistController = async (req, res) => {
+  const { playlistId, songId } = req.params;
+
+  console.log("Eliminant cançó de la playlist:", { playlistId, songId });
+
+  if (!playlistId || !songId) {
+    return res.status(400).json({ message: "Cal proporcionar PlaylistId i SongId" });
   }
-};
-
-const getPlaylistController = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const playlist = await getPlaylistById(id);
-    if (!playlist) return res.status(404).json({ message: "Playlist no trobada" });
-    res.json(playlist);
-  } catch (error) {
-    res.status(500).json({ message: "Error en obtenir la playlist", error });
-  }
-};
-
-const updatePlaylistController = async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  const userId = req.user?.id; // Usuari autenticat
 
   try {
-    const playlist = await getPlaylistById(id);
-    if (!playlist) return res.status(404).json({ message: "Playlist no trobada" });
-
-    // Només l'usuari propietari pot modificar la playlist
-    if (playlist.UserId !== userId) {
-      return res.status(403).json({ message: "No tens permís per modificar aquesta playlist" });
-    }
-
-    const updatedPlaylist = await updatePlaylist(id, { name });
-    res.json(updatedPlaylist);
+    await removeSongFromPlaylist(playlistId, songId);
+    res.json({ message: "Cançó eliminada de la playlist amb èxit" });
   } catch (error) {
-    res.status(500).json({ message: "Error en modificar la playlist", error });
-  }
-};
-
-const deletePlaylistController = async (req, res) => {
-  const { id } = req.params;
-  const userId = req.user?.id; // Usuari autenticat
-
-  try {
-    const playlist = await getPlaylistById(id);
-    if (!playlist) return res.status(404).json({ message: "Playlist no trobada" });
-
-    // Només l'usuari propietari pot eliminar la playlist
-    if (playlist.UserId !== userId) {
-      return res.status(403).json({ message: "No tens permís per eliminar aquesta playlist" });
-    }
-
-    await deletePlaylist(id);
-    res.json({ message: "Playlist eliminada amb èxit" });
-  } catch (error) {
-    res.status(500).json({ message: "Error en eliminar la playlist", error });
+    console.error("Error en eliminar la cançó de la playlist:", error);
+    res.status(500).json({ message: "Error en eliminar la cançó de la playlist", error });
   }
 };
 
 module.exports = {
-  createPlaylistController,
-  getPlaylistsController,
-  getPlaylistController,
-  updatePlaylistController,
-  deletePlaylistController,
-};
+  addSongToPlaylistController,
+  removeSongFromPlaylistController,
+}

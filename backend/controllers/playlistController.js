@@ -10,9 +10,6 @@ const createPlaylistController = async (req, res) => {
   const { name } = req.body;
   const userId = req.user?.id;
 
-  console.log("BODY REBUT:", req.body);
-  console.log("Usuari autenticat:", req.user);
-
   if (!name) {
     return res.status(400).json({ message: "El nom de la playlist és obligatori" });
   }
@@ -73,7 +70,6 @@ const deletePlaylistController = async (req, res) => {
     res.status(500).json({ message: "Error en eliminar la playlist", error });
   }
 };
-
 
 module.exports = {
   createPlaylistController,

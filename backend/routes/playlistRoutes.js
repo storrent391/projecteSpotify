@@ -6,10 +6,12 @@ const {
   updatePlaylistController,
   deletePlaylistController,
 } = require("../controllers/playlistController");
+
 const {
   addSongToPlaylistController,
   removeSongFromPlaylistController,
 } = require("../controllers/playlistSongController");
+
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();

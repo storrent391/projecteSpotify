@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const { poolPromise } = require("../db");
+const { poolPromise } = require("../config/db");
 
 const getUserByEmail = async (email) => {
   try {
