@@ -37,13 +37,13 @@ const getSongByIdOrTitle = async (identifier) => {
   }
 };
 
-const createSong = async ({ title, artist, userId }) => {
+const createSong = async ({ title, artist, UserId }) => {
   const pool = await poolPromise;
   const result = await pool
     .request()
     .input("Title", sql.VarChar, title)
     .input("Artist", sql.VarChar, artist)
-    .input("UserId", sql.UniqueIdentifier, userId)
+    .input("UserId", sql.UniqueIdentifier, UserId)
     .query("INSERT INTO Songs (Title, Artist, UserId) OUTPUT INSERTED.* VALUES (@Title, @Artist, @UserId)");
   return result.recordset[0];
 };

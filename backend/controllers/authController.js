@@ -1,41 +1,48 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { getUserByEmail, getUserById, updateUserById, deleteUserById } = require("../models/userModel");
+const { getUserByEmail, getUserById, updateUserById, deleteUserById, createUser } = require("../models/userModel");
 require("dotenv").config();
 
 const register = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { Username, Email, Password } = req.body; 
+  
+  console.log("Body rebut:", req.body);
+  console.log(Username, Email, Password);
 
-  if (!username || !email || !password) {
+  if (!Username || !Email || !Password) {
     return res.status(400).json({ message: "Tots els camps són obligatoris" });
   }
 
   try {
-    const existingUser = await getUserByEmail(email);
+    const existingUser = await getUserByEmail(Email);
     if (existingUser) {
       return res.status(400).json({ message: "Aquest correu ja està en ús" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await createUser({ username, email, password: hashedPassword });
+    const hashedPassword = await bcrypt.hash(Password, 10);
+    const newUser = await createUser({ username: Username, email: Email, password: hashedPassword });
 
     res.status(201).json({ message: "Usuari creat amb èxit", user: newUser });
   } catch (error) {
-    res.status(500).json({ message: "Error al registrar l'usuari", error });
+    console.error("Error al registrar l'usuari:", error); // 🔥 Això mostrarà l'error complet a la consola
+    res.status(500).json({ message: "Error al registrar l'usuari", error: error.message });
   }
-};
+};  
+
+
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
-
+  const { Email, Password } = req.body;
+  console.log("Body rebut:", req.body);
+  console.log( Email, Password);
   try {
-    const user = await getUserByEmail(email);
+    const user = await getUserByEmail(Email);
 
-    if (!user || !(await bcrypt.compare(password, user.Password))) {
+    if (!user || !(await bcrypt.compare(Password, user.Password))) {
       return res.status(401).json({ message: "Credencials incorrectes" });
     }
 
-    const token = jwt.sign({ id: user.Id, email: user.Email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ Id: user.Id, Email: user.Email }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
@@ -47,8 +54,8 @@ const login = async (req, res) => {
 
 
 const updateUser = async (req, res) => {
-  const userId = req.user.id; 
-  const { username, email, password } = req.body;
+  
+  const {userId, username, email, password } = req.body;
 
   try {
     const user = await getUserById(userId);
@@ -83,7 +90,7 @@ const updateUser = async (req, res) => {
 
 
 const deleteUser = async (req, res) => {
-  const userId = req.user.id;
+  const {userId} = req.body;
 
   try {
     const user = await getUserById(userId);

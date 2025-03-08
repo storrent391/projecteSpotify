@@ -7,8 +7,7 @@ const {
 } = require("../models/playlistModel");
 
 const createPlaylistController = async (req, res) => {
-  const { name } = req.body;
-  const userId = req.user?.id;
+  const { name, userId } = req.body;
 
   if (!name) {
     return res.status(400).json({ message: "El nom de la playlist és obligatori" });

@@ -21,13 +21,13 @@ const getSong = async (req, res) => {
 };
 
 const addSong = async (req, res) => {
-  const { title, artist } = req.body;
+  const { title, artist, UserId } = req.body;
   if (!title || !artist) {
     return res.status(400).json({ message: "Tots els camps són obligatoris" });
   }
 
   try {
-    const newSong = await createSong({ title, artist, userId: req.user.id });
+    const newSong = await createSong({ title, artist,UserId });
     res.status(201).json(newSong);
   } catch (error) {
     res.status(500).json({ message: "Error en afegir la cançó", error });
