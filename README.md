@@ -29,8 +29,30 @@ Aquest projecte és una API desenvolupada amb Node.js i Express que permet la ge
 
 La següent estructura de carpetes reflecteix com s'ha organitzat el projecte:
 
-backend/ ├── config/ │ └── db.js # Configuració de la connexió a la BD ├── controllers/
-│ ├── authController.js # Registre, login, actualització i eliminació d'usuaris │ ├── songController.js # Operacions CRUD per cançons │ ├── playlistController.js # Operacions CRUD per playlists │ └── playlistSongController.js # Gestió de cançons dins de playlists ├── middleware/ │ ├── authMiddleware.js # Verifica el token JWT │ └── errorHandler.js # Gestió global d'errors ├── models/ │ ├── userModel.js # Funcions per gestionar els usuaris a la BD │ ├── songModel.js # Funcions per gestionar les cançons │ ├── playlistModel.js # Funcions per gestionar les playlists │ └── playlistSongModel.js # Funcions per la relació Playlist-Song ├── routes/ │ ├── authRoutes.js # Rutes per a autenticació │ ├── songRoutes.js # Rutes per a cançons │ └── playlistRoutes.js # Rutes per a playlists i gestió de cançons en playlists ├── .env.example # Exemple de fitxer d'entorn ├── package.json └── index.js # Punt d'entrada del servidor
+backend/
+├── config/
+│   └── db.js                  # Configuració de la connexió a la base de dades (SQL Server)
+├── controllers/
+│   ├── authController.js      # Control·la registre, login, actualització i eliminació d'usuaris
+│   ├── songController.js      # Control·la gestió CRUD per les cançons
+│   ├── playlistController.js  # Control·la gestió CRUD per les playlists
+│   └── playlistSongController.js  # Control·la gestió de la relació entre playlists i cançons
+├── middleware/
+│   ├── authMiddleware.js      # Verifica el JWT per protegir rutes sensibles
+│   └── errorHandler.js        # Gestió global d'errors per a la API
+├── models/
+│   ├── userModel.js           # Funcions per interactuar amb la taula d'usuaris
+│   ├── songModel.js           # Funcions per interactuar amb la taula de cançons
+│   ├── playlistModel.js       # Funcions per interactuar amb la taula de playlists
+│   └── playlistSongModel.js   # Funcions per gestionar la relació Playlist-Song
+├── routes/
+│   ├── authRoutes.js          # Rutes relacionades amb l'autenticació d'usuaris
+│   ├── songRoutes.js          # Rutes per gestionar les cançons
+│   └── playlistRoutes.js      # Rutes per gestionar les playlists i la seva relació amb les cançons
+├── .env.example               # Exemple de fitxer d'entorn (variables d'entorn)
+├── package.json               # Gestió de dependències i scripts del projecte
+└── app.js                   # Punt d'entrada del servidor (configura Express, middlewares, rutes, etc.)
+
 
 
 ### Base de dades: Estructura i Relacions
