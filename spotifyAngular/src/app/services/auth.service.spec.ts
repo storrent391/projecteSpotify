@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
-import { environment } from '../../environments/environment';
+const baseUrl = 'http://localhost:5000/api/auth';
 
 describe('AuthService (TDD)', () => {
   let service: AuthService;
@@ -11,6 +11,7 @@ describe('AuthService (TDD)', () => {
     id: 1,
     username: 'juan',
     email: 'juan@ej.com',
+    password: 'patata123',
     token: 'abc123'
   };
 
@@ -29,12 +30,12 @@ describe('AuthService (TDD)', () => {
   afterEach(() => httpMock.verify());
 
   it('should issue a POST to /auth/login and store token', () => {
-    service.login({ email: 'x', password: 'y' }).subscribe(user => {
+    service.login(dummyUser.email, dummyUser.password).subscribe(user => {
       expect(user).toEqual(dummyUser);
       expect(localStorage.getItem('token')).toBe('abc123');
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+    const req = httpMock.expectOne(`${baseUrl}/auth/login`);
     expect(req.request.method).toBe('POST');
     req.flush(dummyUser);
   });
