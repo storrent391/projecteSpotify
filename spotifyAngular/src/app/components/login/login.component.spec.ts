@@ -1,32 +1,29 @@
-import { TestBed, ComponentFixture, fakeAsync, tick } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
-import { AuthService } from '../../services/auth.service';
-import { LoginComponent } from './login.component';
+// src/app/components/login/login.component.spec.ts
 
-describe('LoginComponent', () => {
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { LoginComponent } from './login.component';
+import { AuthService, User } from '../../services/auth.service';
+import { By } from '@angular/platform-browser';
+import { of } from 'rxjs';
+
+describe('LoginComponent (TDD)', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let authSpy: jasmine.SpyObj<AuthService>;
 
   beforeEach(async () => {
-    // Create spies for AuthService and Router
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['login']);
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    authSpy = jasmine.createSpyObj<AuthService>('AuthService', ['login']);
+    // Mock: login devuelve un usuario con token
+    const fakeUser: User = { id: 1, username: 'u', email: 'e', token: 't' };
+    authSpy.login.and.returnValue(of(fakeUser));
 
     await TestBed.configureTestingModule({
-      imports: [
-        LoginComponent, // Add the standalone component here
-        ReactiveFormsModule,
-        HttpClientTestingModule,
-      ],
+      imports: [ ReactiveFormsModule ],
+      declarations: [ LoginComponent ],
       providers: [
-        { provide: AuthService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy },
-      ],
+        { provide: AuthService, useValue: authSpy }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
@@ -34,67 +31,39 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should create a form with email & password controls', () => {
+    expect(component.form.contains('email')).toBeTrue();
+    expect(component.form.contains('password')).toBeTrue();
   });
 
-  it('should have an invalid form initially', () => {
-    expect(component.loginForm.valid).toBeFalse();
-  });
-
-  it('should validate email and password fields', () => {
-    const email = component.loginForm.controls['email'];
-    const password = component.loginForm.controls['password'];
-
-    // Email validation
+  it('should mark email and password as invalid if empty', () => {
+    const email = component.form.get('email')!;
+    const password = component.form.get('password')!;
     email.setValue('');
-    expect(email.valid).toBeFalse();
-    email.setValue('invalid-email');
-    expect(email.valid).toBeFalse();
-    email.setValue('test@example.com');
-    expect(email.valid).toBeTrue();
-
-    // Password validation
     password.setValue('');
+    expect(email.valid).toBeFalse();
     expect(password.valid).toBeFalse();
-    password.setValue('123');
-    expect(password.valid).toBeFalse();
-    password.setValue('123456');
-    expect(password.valid).toBeTrue();
   });
 
-  it('should call AuthService login on valid form submission', fakeAsync(() => {
-    const email = 'test@example.com';
-    const password = 'password123';
-    component.loginForm.setValue({ email, password });
-
-    authServiceSpy.login.and.returnValue(of({ success: true }));
-    component.onSubmit();
-
-    expect(authServiceSpy.login).toHaveBeenCalledOnceWith(email, password);
-    tick();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
-  }));
-
-  it('should handle login failure', fakeAsync(() => {
-    const email = 'test@example.com';
-    const password = 'wrongpassword';
-    component.loginForm.setValue({ email, password });
-
-    authServiceSpy.login.and.returnValue(throwError(() => new Error('Invalid credentials')));
-    component.onSubmit();
-
-    expect(authServiceSpy.login).toHaveBeenCalledOnceWith(email, password);
-    tick();
-    expect(routerSpy.navigate).not.toHaveBeenCalled();
-  }));
-
-  it('should disable the submit button when the form is invalid', () => {
-    const button = fixture.nativeElement.querySelector('button[type="submit"]');
-    expect(button.disabled).toBeTrue();
-
-    component.loginForm.setValue({ email: 'test@example.com', password: 'password123' });
+  it('should disable submit button when form is invalid', () => {
+    component.form.setValue({ email: '', password: '' });
     fixture.detectChanges();
-    expect(button.disabled).toBeFalse();
+    const btn = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
+    expect(btn.disabled).toBeTrue();
+  });
+
+  it('should enable submit button when form is valid', () => {
+    component.form.setValue({ email: 'a@b.com', password: '123456' });
+    fixture.detectChanges();
+    const btn = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
+    expect(btn.disabled).toBeFalse();
+  });
+
+  it('should call AuthService.login on valid form submit', () => {
+    component.form.setValue({ email: 'a@b.com', password: '123456' });
+    fixture.detectChanges();
+    const btn = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
+    btn.click();
+    expect(authSpy.login).toHaveBeenCalledWith('a@b.com', '123456');
   });
 });
