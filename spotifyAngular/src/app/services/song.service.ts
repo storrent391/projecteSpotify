@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Song } from '../models/song.model';
 
-export interface Song {
-  id: string;
-  Title: string;
-  Artist: string;
-  createdAt: string;
-}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class SongService {
+  
   private apiUrl = 'http://localhost:5000/api/songs';
 
+  list(): Observable<Song[]> {
+    return this.http.get<Song[]>(this.apiUrl);
+  }
   constructor(private http: HttpClient) {}
 
   getSongs(): Observable<Song[]> {
