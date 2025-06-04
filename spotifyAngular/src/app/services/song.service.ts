@@ -1,49 +1,50 @@
+// src/app/services/song.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../environments/environment';
+import { Song } from '../models/song.model';
 import { Observable } from 'rxjs';
-
-export interface Song {
-  id: string;
-  Title: string;
-  Artist: string;
-  createdAt: string;
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class SongService {
-  private apiUrl = 'http://localhost:5000/api/songs';
+  private apiUrl = `${environment.apiUrl}/songs`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getSongs(): Observable<Song[]> {
-    return this.http.get<Song[]>(this.apiUrl);
+  getSongs(page: number = 1, limit: number = 20): Observable<Song[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    return this.http.get<Song[]>(this.apiUrl, { params });
+  }
+
+  searchSongs(title?: string, artist?: string): Observable<Song[]> {
+    let params = new HttpParams();
+    if (title) {
+      params = params.set('title', title);
+    }
+    if (artist) {
+      params = params.set('artist', artist);
+    }
+    return this.http.get<Song[]>(`${this.apiUrl}/search`, { params });
   }
 
   getSongById(id: string): Observable<Song> {
     return this.http.get<Song>(`${this.apiUrl}/${id}`);
   }
 
-  addSong(song: Partial<Song>, token: string): Observable<Song> {
-    return this.http.post<Song>(this.apiUrl, song, this.getAuthHeaders(token));
-  }
-  
-
-  updateSong(id: string, song: Partial<Song>, token: string): Observable<Song> {
-    return this.http.put<Song>(`${this.apiUrl}/${id}`, song, this.getAuthHeaders(token));
+  createSong(title: string, artist: string): Observable<Song> {
+    const body = { title, artist };
+    return this.http.post<Song>(this.apiUrl, body);
   }
 
-  deleteSong(id: string, token: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, this.getAuthHeaders(token));
+  updateSong(id: string, data: { title?: string; artist?: string }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, data);
   }
 
-  private getAuthHeaders(token: string) {
-    return {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      })
-    };
+  deleteSong(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

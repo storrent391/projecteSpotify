@@ -1,9 +1,27 @@
-<h2>Llista de Cançons</h2>
-<ul *ngIf="songs.length > 0; else noSongs">
-  <li *ngFor="let song of songs">
-    <strong>{{ song.Title }}</strong> - <span>{{ song.Artist }}</span>
-  </li>
-</ul>
-<ng-template #noSongs>
-  <p>No hay canciones disponibles.</p>
-</ng-template>
+<!-- src/app/components/songs/song-list/song-list.component.html -->
+<div class="song-list-container">
+  <h2>Cançons</h2>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Títol..." [(ngModel)]="queryTitle" />
+    <input type="text" placeholder="Artista..." [(ngModel)]="queryArtist" />
+    <button (click)="search()">Cerca</button>
+  </div>
+
+  <!-- Ara fem servir isLoggedIn en lloc de localStorage directament -->
+  <button routerLink="/songs/new" *ngIf="isLoggedIn">Nova cançó</button>
+
+  <ul>
+    <li *ngFor="let song of songs">
+      <a [routerLink]="['/songs', song.id]">
+        {{ song.title }} — {{ song.artist }}
+      </a>
+    </li>
+  </ul>
+
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 1">Anterior</button>
+    <span>Pàgina {{ page }}</span>
+    <button (click)="nextPage()">Següent</button>
+  </div>
+</div>

@@ -1,1 +1,14 @@
-<p>home works!</p>
+<!-- src/app/components/home/home.component.html -->
+<div class="home-container">
+  <h1>Benvingut a Spotify Angular Client</h1>
+  <p>
+    Navega a <a routerLink="/songs">Cançons</a> o 
+    <a routerLink="/playlists">Playlists</a>.
+  </p>
+
+
+  <p *ngIf="!isLoggedIn">
+    <a routerLink="/login">Inicia Sessió</a> o 
+    <a routerLink="/register">Registra’t</a>.
+  </p>
+</div>

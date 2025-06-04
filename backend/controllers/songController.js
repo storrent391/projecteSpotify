@@ -1,100 +1,124 @@
-const { getAllSongs, getSongByIdOrTitle, createSong, deleteSong, updateSong } = require("../models/songModel");
-const sql = require("mssql");
+const { validationResult } = require("express-validator");
+const {
+  getAllSongs,
+  getSongById,
+  createSong,
+  updateSong,
+  deleteSong,
+  searchSongs,
+} = require("../models/songModel");
 
-const getSongs = async (req, res) => {
+const getSongs = async (req, res, next) => {
   try {
-    const songs = await getAllSongs();
-    res.json(songs);
+    // Paginació opcional: ?page=1&limit=20
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20;
+    const songs = await getAllSongs({ page, limit });
+    return res.json(songs);
   } catch (error) {
-    res.status(500).json({ message: "Error en obtenir les cançons", error });
+    return next(error);
   }
 };
 
-const getSong = async (req, res) => {
-  try {
-    const song = await getSongByIdOrTitle(req.params.id);
-    if (!song) return res.status(404).json({ message: "Cançó no trobada" });
-    res.json(song);
-  } catch (error) {
-    res.status(500).json({ message: "Error en obtenir la cançó", error });
-  }
-};
-
-const addSong = async (req, res) => {
-  const { title, artist, UserId } = req.body;
-  if (!title || !artist) {
-    return res.status(400).json({ message: "Tots els camps són obligatoris" });
-  }
-
-  try {
-    const newSong = await createSong({ title, artist,UserId });
-    res.status(201).json(newSong);
-  } catch (error) {
-    res.status(500).json({ message: "Error en afegir la cançó", error });
-  }
-};
-
-const updateSongController = async (req, res) => {
-  const { id } = req.params;
-  const { title, artist } = req.body;
-
-  if (!title && !artist) {
-    return res.status(400).json({ message: "Cal proporcionar almenys un camp per actualitzar" });
-  }
-  
-  try {
-    const song = await getSongByIdOrTitle(id);
-    if (!song) return res.status(404).json({ message: "Cançó no trobada" });
-
-    const updatedRows = await updateSong(id, { title, artist });
-
-    if (updatedRows > 0) {
-      res.json({ message: "Cançó actualitzada correctament" });
-    } else {
-      res.status(400).json({ message: "No s'ha fet cap canvi a la cançó" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: "Error en modificar la cançó", error });
-  }
-};
-
-const removeSong = async (req, res) => {
+const getSong = async (req, res, next) => {
   try {
     const { id } = req.params;
-    if (!id) return res.status(400).json({ message: "ID no proporcionat" });
-
-    const song = await getSongByIdOrTitle(id);
-    if (!song) return res.status(404).json({ message: "Cançó no trobada" });
-
-    await deleteSong(id);
-    res.json({ message: "Cançó eliminada amb èxit" });
+    const song = await getSongById(id);
+    if (!song) {
+      return res.status(404).json({ message: "Cançó no trobada" });
+    }
+    return res.json(song);
   } catch (error) {
-    res.status(500).json({ message: "Error en eliminar la cançó", error });
+    return next(error);
   }
 };
 
-const searchSongs = async (req, res) => {
-  const { title, artist } = req.query;
+const addSong = async (req, res, next) => {
+  // Validació amb express-validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
   try {
-    const pool = await poolPromise;
-    const request = pool.request();
+    const { title, artist } = req.body;
+    const userId = req.user.Id;
 
-    if (title) request.input("Title", sql.VarChar, `%${title}%`);
-    if (artist) request.input("Artist", sql.VarChar, `%${artist}%`);
-
-    const result = await request.query(`
-      SELECT * FROM Songs
-      WHERE (@Title IS NULL OR Title LIKE '%' + @Title + '%')
-      AND (@Artist IS NULL OR Artist LIKE '%' + @Artist + '%')
-    `);
-
-    res.json(result.recordset);
+    const newSong = await createSong({ title, artist, UserId: userId });
+    return res.status(201).json(newSong);
   } catch (error) {
-    console.error("Error en la cerca de cançons:", error);
-    res.status(500).json({ message: "Error en la cerca de cançons", error });
+    return next(error);
   }
 };
 
+const updateSongController = async (req, res, next) => {
+  // Validació amb express-validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
-module.exports = { getSongs, getSong, addSong, updateSongController, removeSong, searchSongs };
+  try {
+    const { id } = req.params;
+    const { title, artist } = req.body;
+    const userId = req.user.Id;
+
+    const existingSong = await getSongById(id);
+    if (!existingSong) {
+      return res.status(404).json({ message: "Cançó no trobada" });
+    }
+    // Autorització: només el propietari pot modificar
+    if (existingSong.UserId.toString() !== userId) {
+      return res.status(403).json({ message: "No tens permisos per modificar aquesta cançó" });
+    }
+
+    const rowsAffected = await updateSong(id, { title, artist });
+    if (rowsAffected > 0) {
+      return res.json({ message: "Cançó actualitzada correctament" });
+    } else {
+      return res.status(400).json({ message: "No s'ha fet cap canvi a la cançó" });
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const removeSong = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.Id;
+
+    const existingSong = await getSongById(id);
+    if (!existingSong) {
+      return res.status(404).json({ message: "Cançó no trobada" });
+    }
+    // Autorització: només el propietari pot eliminar
+    if (existingSong.UserId.toString() !== userId) {
+      return res.status(403).json({ message: "No tens permisos per eliminar aquesta cançó" });
+    }
+
+    await deleteSong(id);
+    return res.json({ message: "Cançó eliminada amb èxit" });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const searchSongsController = async (req, res, next) => {
+  try {
+    const { title, artist } = req.query;
+    const results = await searchSongs({ title, artist });
+    return res.json(results);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = {
+  getSongs,
+  getSong,
+  addSong,
+  updateSongController,
+  removeSong,
+  searchSongsController,
+};

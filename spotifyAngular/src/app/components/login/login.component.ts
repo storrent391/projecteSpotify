@@ -1,46 +1,54 @@
-import { Component } from '@angular/core';
+// src/app/components/auth/login/login.component.ts
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { AuthController } from '../../controllers/auth.controller';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+
+import { AuthService } from '../../services/auth.service';
+
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
-  loginForm: FormGroup;
+export class LoginComponent implements OnInit {
+  form!: FormGroup;
+  errorMsg: string = '';
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(
-    private fb: FormBuilder,
-    private authController: AuthController,
-    private router: Router
-  ) {
-    this.loginForm = this.fb.group({
+  ngOnInit(): void {
+    this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', Validators.required]
     });
   }
 
   onSubmit(): void {
-    if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-  
-  
-      this.authController.loginUser(email, password).subscribe({
-        next: (response) => {
-          console.log("✅ Login correcte, token rebut:", response.token); 
-          localStorage.setItem('token', response.token);
-          this.router.navigate(['/home']);
-        },
-        error: (err) => {
-          console.error("❌ Error en el login:", err);
-        },
-      });
-    }
+    if (this.form.invalid) return;
+
+    const { email, password } = this.form.value;
+    this.authService.login(email, password).subscribe({
+      next: resp => {
+        const token = resp.token;
+        
+        const decoded: any = jwtDecode(token);
+        const user = {
+          id: decoded.Id,
+          username: '', 
+          email: decoded.Email
+        };
+        this.authService.setCurrentUser(user);
+        this.router.navigate(['/']);
+      },
+      error: err => {
+        this.errorMsg = err.error?.message || 'Error en el login';
+      }
+    });
   }
-  
-  
 }

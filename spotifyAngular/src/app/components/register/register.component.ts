@@ -1,31 +1,46 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+// src/app/components/auth/register/register.component.ts
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
+  styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent {
-  registerForm: FormGroup;
+export class RegisterComponent implements OnInit {
+  form!: FormGroup;
+  errorMsg: string = '';
+  successMsg: string = '';
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private fb: FormBuilder) {
-    this.registerForm = this.fb.group({
+  ngOnInit(): void {
+    this.form = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
   onSubmit(): void {
-    if (this.registerForm.valid) {
-      console.log('Form Submitted', this.registerForm.value);
-    } else {
-      console.error('Form is invalid');
-    }
+    if (this.form.invalid) return;
+
+    const { username, email, password } = this.form.value;
+    this.authService.register(username, email, password).subscribe({
+      next: resp => {
+        this.successMsg = resp.message;
+        setTimeout(() => this.router.navigate(['/login']), 2000);
+      },
+      error: err => {
+        this.errorMsg = err.error?.message || 'Error en el registre';
+      }
+    });
   }
 }

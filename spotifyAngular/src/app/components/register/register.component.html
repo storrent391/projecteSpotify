@@ -1,62 +1,35 @@
+<!-- src/app/components/auth/register/register.component.html -->
 <div class="register-container">
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div>
-        <label for="username">Username</label>
-        <input
-          id="username"
-          formControlName="username"
-          type="text"
-          placeholder="Enter your username"
-        />
-        <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
-          <small>Username is required.</small>
-        </div>
+  <h2>Registra’t</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="username">Nom d’usuari</label>
+      <input id="username" formControlName="username" type="text" placeholder="jordi" />
+      <div *ngIf="form.get('username')?.invalid && form.get('username')?.touched" class="error">
+        El nom d’usuari és obligatori
       </div>
-  
-      <div>
-        <label for="email">Email</label>
-        <input
-          id="email"
-          formControlName="email"
-          type="email"
-          placeholder="Enter your email"
-        />
-        <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-          <small *ngIf="registerForm.get('email')?.errors?.['required']">Email is required.</small>
-          <small *ngIf="registerForm.get('email')?.errors?.['email']">Enter a valid email.</small>
-        </div>
+    </div>
+
+    <div>
+      <label for="email">Correu electrònic</label>
+      <input id="email" formControlName="email" type="email" placeholder="email@example.com" />
+      <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="error">
+        Correu no vàlid
       </div>
-  
-      <div>
-        <label for="password">Password</label>
-        <input
-          id="password"
-          formControlName="password"
-          type="password"
-          placeholder="Enter your password"
-        />
-        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-          <small *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</small>
-          <small *ngIf="registerForm.get('password')?.errors?.['minlength']">
-            Password must be at least 6 characters long.
-          </small>
-        </div>
+    </div>
+
+    <div>
+      <label for="password">Contrasenya</label>
+      <input id="password" formControlName="password" type="password" placeholder="••••••••" />
+      <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="error">
+        La contrasenya ha de tenir almenys 6 caràcters
       </div>
-  
-      <div>
-        <label for="confirmPassword">Confirm Password</label>
-        <input
-          id="confirmPassword"
-          formControlName="confirmPassword"
-          type="password"
-          placeholder="Confirm your password"
-        />
-        <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
-          <small>Confirming your password is required.</small>
-        </div>
-      </div>
-  
-      <button type="submit" [disabled]="registerForm.invalid">Register</button>
-    </form>
-  </div>
-  
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Registra’t</button>
+  </form>
+
+  <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
+  <p *ngIf="successMsg" class="success">{{ successMsg }}</p>
+  <p>Ja tens compte? <a routerLink="/login">Inicia sessió</a></p>
+</div>

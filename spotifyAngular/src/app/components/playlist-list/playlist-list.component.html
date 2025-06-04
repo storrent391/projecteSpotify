@@ -1,0 +1,14 @@
+<!-- src/app/components/playlists/playlist-list/playlist-list.component.html -->
+<div class="playlist-list-container">
+  <h2>Playlists</h2>
+ 
+  <button routerLink="/playlists/new" *ngIf="isLoggedIn">Nova Playlist</button>
+
+  <ul>
+    <li *ngFor="let pl of playlists">
+      <a [routerLink]="['/playlists', pl.id]">
+        {{ pl.name }} ({{ pl.createdAt | date:'short' }})
+      </a>
+    </li>
+  </ul>
+</div>

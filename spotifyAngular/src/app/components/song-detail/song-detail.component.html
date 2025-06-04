@@ -1,6 +1,13 @@
-<h2>Detalls de la Cançó</h2>
-<div *ngIf="song">
-  <p><strong>Títol:</strong> {{ song.Title }}</p>
-  <p><strong>Artista:</strong> {{ song.Artist }}</p>
-  <p><strong>Data de Creació:</strong> {{ song.createdAt }}</p>
+<!-- src/app/components/songs/song-detail/song-detail.component.html -->
+<div *ngIf="song; else notFound">
+  <h2>{{ song.title }} — {{ song.artist }}</h2>
+  <p><strong>ID:</strong> {{ song.id }}</p>
+  <p><strong>Usuari:</strong> {{ song.userId }}</p>
+
+  <button routerLink="/songs/{{ song.id }}/edit">Editar</button>
+  <button (click)="deleteSong()">Esborrar</button>
 </div>
+
+<ng-template #notFound>
+  <p class="error">Cançó no trobada.</p>
+</ng-template>

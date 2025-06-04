@@ -1,19 +1,24 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+// src/app/guards/auth.guard.ts
+import { inject, Injectable } from '@angular/core';
+import {
+  CanActivateFn,
+  Router,
+  RouterModule,
+  UrlTree
+} from '@angular/router';
+
 import { AuthService } from '../services/auth.service';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+export const AuthGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  canActivate(): boolean {
-    if (this.authService.isAuthenticated()) {
-      return true;
-    } else {
-      this.router.navigate(['/login']);
-      return false;
-    }
+  const token = localStorage.getItem('jwtToken');
+  if (token) {
+    return true;
   }
-}
+  return router.createUrlTree(['/login']);
+};
+
+// Cal registrar RouterModule en imports dels components que usen <router-outlet> o directives de routing.
+// Com que fem bootstrapApplication amb provideRouter, no cal registrar aquí res més.

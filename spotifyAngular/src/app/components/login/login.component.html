@@ -1,13 +1,25 @@
+<!-- src/app/components/auth/login/login.component.html -->
 <div class="login-container">
-    <h1>Login</h1>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <label for="email">Email</label>
-      <input id="email" type="email" formControlName="email" required placeholder="Enter your email" />
-  
-      <label for="password">Password</label>
-      <input id="password" type="password" formControlName="password" required placeholder="Enter your password" />
-  
-      <button type="submit" [disabled]="loginForm.invalid">Login</button>
-    </form>
-  </div>
-  
+  <h2>Iniciar Sessió</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="email">Correu electrònic</label>
+      <input id="email" formControlName="email" type="email" placeholder="email@example.com" />
+      <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="error">
+        Correu no vàlid
+      </div>
+    </div>
+
+    <div>
+      <label for="password">Contrasenya</label>
+      <input id="password" formControlName="password" type="password" placeholder="••••••••" />
+      <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="error">
+        La contrasenya és obligatòria
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Entrar</button>
+  </form>
+  <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
+  <p>Encara no tens compte? <a routerLink="/register">Registra’t</a></p>
+</div>

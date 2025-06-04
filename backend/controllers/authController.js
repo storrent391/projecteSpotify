@@ -1,105 +1,122 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { getUserByEmail, getUserById, updateUserById, deleteUserById, createUser } = require("../models/userModel");
+const { validationResult } = require("express-validator");
+const {
+  getUserByEmail,
+  getUserById,
+  updateUserById,
+  deleteUserById,
+  createUser,
+} = require("../models/userModel");
+
 require("dotenv").config();
 
-const register = async (req, res) => {
-  const { Username, Email, Password } = req.body; 
-  
-  console.log("Body rebut:", req.body);
-  console.log(Username, Email, Password);
-
-  if (!Username || !Email || !Password) {
-    return res.status(400).json({ message: "Tots els camps són obligatoris" });
+const register = async (req, res, next) => {
+  // Validació amb express-validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
 
+  const { username, email, password } = req.body;
+
   try {
-    const existingUser = await getUserByEmail(Email);
+    const existingUser = await getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: "Aquest correu ja està en ús" });
     }
 
-    const hashedPassword = await bcrypt.hash(Password, 10);
-    const newUser = await createUser({ username: Username, email: Email, password: hashedPassword });
-
-    res.status(201).json({ message: "Usuari creat amb èxit", user: newUser });
-  } catch (error) {
-    console.error("Error al registrar l'usuari:", error); // 🔥 Això mostrarà l'error complet a la consola
-    res.status(500).json({ message: "Error al registrar l'usuari", error: error.message });
-  }
-};  
-
-
-
-const login = async (req, res) => {
-  const { Email, Password } = req.body;
-  console.log("Body rebut:", req.body);
-  console.log( Email, Password);
-  try {
-    const user = await getUserByEmail(Email);
-
-    if (!user || !(await bcrypt.compare(Password, user.Password))) {
-      return res.status(401).json({ message: "Credencials incorrectes" });
-    }
-
-    const token = jwt.sign({ Id: user.Id, Email: user.Email }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await createUser({ username, email, password: hashedPassword });
+    return res.status(201).json({
+      message: "Usuari creat amb èxit",
+      user: { id: newUser.Id, username: newUser.Username, email: newUser.Email },
     });
-
-    res.json({ message: "Login correcte", token });
   } catch (error) {
-    res.status(500).json({ message: "Error al iniciar sessió", error });
+    return next(error);
   }
 };
 
+const login = async (req, res, next) => {
+  // Validació amb express-validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
-const updateUser = async (req, res) => {
-  
-  const {userId, username, email, password } = req.body;
+  const { email, password } = req.body;
+  try {
+    const user = await getUserByEmail(email);
+    if (!user || !(await bcrypt.compare(password, user.Password))) {
+      return res.status(401).json({ message: "Credencials incorrectes" });
+    }
+
+    const token = jwt.sign(
+      { Id: user.Id, Email: user.Email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    return res.json({ message: "Login correcte", token });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const updateUser = async (req, res, next) => {
+  // Validació amb express-validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
   try {
-    const user = await getUserById(userId);
-    if (!user) return res.status(404).json({ message: "Usuari no trobat" });
+    const userId = req.user.Id;
+    const { username, email, password } = req.body;
 
+    const existingUser = await getUserById(userId);
+    if (!existingUser) {
+      return res.status(404).json({ message: "Usuari no trobat" });
+    }
 
-    if (email && email !== user.Email) {
-      const existingEmail = await getUserByEmail(email);
-      if (existingEmail) {
+    if (email && email !== existingUser.Email) {
+      const already = await getUserByEmail(email);
+      if (already) {
         return res.status(400).json({ message: "Aquest correu ja està en ús" });
       }
     }
 
-
-    let hashedPassword = user.Password;
+    let hashedPassword = existingUser.Password;
     if (password) {
       hashedPassword = await bcrypt.hash(password, 10);
     }
 
-  
     const updatedUser = await updateUserById(userId, {
-      username: username || user.Username,
-      email: email || user.Email,
+      username: username || existingUser.Username,
+      email: email || existingUser.Email,
       password: hashedPassword,
     });
 
-    res.json({ message: "Usuari actualitzat correctament", user: updatedUser });
+    return res.json({
+      message: "Usuari actualitzat correctament",
+      user: { id: updatedUser.Id, username: updatedUser.Username, email: updatedUser.Email },
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error al modificar l'usuari", error });
+    return next(error);
   }
 };
 
-
-const deleteUser = async (req, res) => {
-  const {userId} = req.body;
-
+const deleteUser = async (req, res, next) => {
   try {
-    const user = await getUserById(userId);
-    if (!user) return res.status(404).json({ message: "Usuari no trobat" });
+    const userId = req.user.Id;
+    const existingUser = await getUserById(userId);
+    if (!existingUser) {
+      return res.status(404).json({ message: "Usuari no trobat" });
+    }
 
     await deleteUserById(userId);
-    res.json({ message: "Usuari eliminat correctament" });
+    return res.json({ message: "Usuari eliminat correctament" });
   } catch (error) {
-    res.status(500).json({ message: "Error al eliminar l'usuari", error });
+    return next(error);
   }
 };
 

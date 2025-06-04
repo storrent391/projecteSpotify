@@ -1,0 +1,29 @@
+<!-- src/app/components/playlists/playlist-detail/playlist-detail.component.html -->
+<div *ngIf="playlist; else notFound">
+  <h2>{{ playlist.name }}</h2>
+  <p>Creada: {{ playlist.createdAt | date:'short' }}</p>
+  <p>Usuari propietari: {{ playlist.userId }}</p>
+
+  <button *ngIf="isOwner" routerLink="/playlists/{{ playlist.id }}/edit">Editar Playlist</button>
+  <button *ngIf="isOwner" (click)="deletePlaylist()">Esborrar Playlist</button>
+
+  <hr />
+
+  <h3>Cançons a la playlist</h3>
+  <ul>
+    <li *ngFor="let song of songs">
+      {{ song.title }} — {{ song.artist }}
+      <button *ngIf="isOwner" (click)="removeSong(song.id)">Eliminar</button>
+    </li>
+  </ul>
+
+  <div *ngIf="isOwner" class="add-song-form">
+    <h4>Afegir cançó a la playlist</h4>
+    <input type="text" placeholder="ID de la cançó" [(ngModel)]="newSongId" />
+    <button (click)="addSong()" [disabled]="!newSongId">Afegir</button>
+  </div>
+</div>
+
+<ng-template #notFound>
+  <p class="error">Playlist no trobada.</p>
+</ng-template>

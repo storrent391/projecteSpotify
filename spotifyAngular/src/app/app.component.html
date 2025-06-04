@@ -1,1 +1,15 @@
-<router-outlet />
+<!-- src/app/app.component.html -->
+<nav>
+  <a routerLink="/">Home</a> |
+  <a routerLink="/songs">Cançons</a> |
+  <a routerLink="/playlists">Playlists</a> |
+  <span *ngIf="!isLoggedIn">
+    <a routerLink="/login">Login</a> |
+    <a routerLink="/register">Registre</a>
+  </span>
+  <span *ngIf="isLoggedIn">
+    <button (click)="logout()">Logout</button>
+  </span>
+</nav>
+<hr />
+<router-outlet></router-outlet>

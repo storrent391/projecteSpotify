@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const {
   createPlaylist,
   getAllPlaylists,
@@ -5,68 +6,114 @@ const {
   updatePlaylist,
   deletePlaylist,
 } = require("../models/playlistModel");
+const { getSongsByPlaylistId } = require("../models/playlistSongModel");
 
-const createPlaylistController = async (req, res) => {
-  const { name, userId } = req.body;
-
-  if (!name) {
-    return res.status(400).json({ message: "El nom de la playlist és obligatori" });
+// Crear nova playlist
+const createPlaylistController = async (req, res, next) => {
+  // Validació
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
 
   try {
+    const { name } = req.body;
+    const userId = req.user.Id;
+
     const newPlaylist = await createPlaylist({ name, userId });
-    res.status(201).json(newPlaylist);
+    return res.status(201).json(newPlaylist);
   } catch (error) {
-    console.error("Error en crear la playlist:", error);
-    res.status(500).json({ message: "Error en crear la playlist", error });
+    return next(error);
   }
 };
 
-const getPlaylistsController = async (req, res) => {
+// Obtenir totes les playlists (poden mostrar-se en public, o bé filtrar per usuari)
+const getPlaylistsController = async (req, res, next) => {
   try {
     const playlists = await getAllPlaylists();
-    res.json(playlists);
+    return res.json(playlists);
   } catch (error) {
-    console.error("Error en obtenir les playlists:", error);
-    res.status(500).json({ message: "Error en obtenir les playlists", error });
+    return next(error);
   }
 };
 
-const getPlaylistController = async (req, res) => {
-  const { id } = req.params;
+// Obtenir playlist per Id
+const getPlaylistController = async (req, res, next) => {
   try {
+    const { id } = req.params;
     const playlist = await getPlaylistById(id);
-    if (!playlist) return res.status(404).json({ message: "Playlist no trobada" });
-    res.json(playlist);
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist no trobada" });
+    }
+    return res.json(playlist);
   } catch (error) {
-    res.status(500).json({ message: "Error en obtenir la playlist", error });
+    return next(error);
   }
 };
 
-const updatePlaylistController = async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  try {
-    const playlist = await getPlaylistById(id);
-    if (!playlist) return res.status(404).json({ message: "Playlist no trobada" });
+// Actualitzar nom de la playlist
+const updatePlaylistController = async (req, res, next) => {
+  // Validació
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
-    const updatedPlaylist = await updatePlaylist(id, { name });
-    res.json(updatedPlaylist);
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    const userId = req.user.Id;
+
+    const playlist = await getPlaylistById(id);
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist no trobada" });
+    }
+    if (playlist.UserId.toString() !== userId) {
+      return res.status(403).json({ message: "No tens permisos per modificar aquesta playlist" });
+    }
+
+    const updated = await updatePlaylist(id, { name });
+    return res.json(updated);
   } catch (error) {
-    res.status(500).json({ message: "Error en modificar la playlist", error });
+    return next(error);
   }
 };
 
-const deletePlaylistController = async (req, res) => {
-  const { id } = req.params;
+// Eliminar playlist
+const deletePlaylistController = async (req, res, next) => {
   try {
+    const { id } = req.params;
+    const userId = req.user.Id;
+
     const playlist = await getPlaylistById(id);
-    if (!playlist) return res.status(404).json({ message: "Playlist no trobada" });
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist no trobada" });
+    }
+    if (playlist.UserId.toString() !== userId) {
+      return res.status(403).json({ message: "No tens permisos per eliminar aquesta playlist" });
+    }
 
     await deletePlaylist(id);
-    res.json({ message: "Playlist eliminada amb èxit" });
+    return res.json({ message: "Playlist eliminada amb èxit" });
   } catch (error) {
-    res.status(500).json({ message: "Error en eliminar la playlist", error });
+    return next(error);
+  }
+};
+
+// Obtenir totes les cançons d’una playlist concreta
+const getSongsInPlaylistController = async (req, res, next) => {
+  try {
+    const { playlistId } = req.params;
+    const playlist = await getPlaylistById(playlistId);
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist no trobada" });
+    }
+    // Opcionalment, es podria comprovar si l’usuari té permís per veure-la (pública vs privada)
+
+    const songs = await getSongsByPlaylistId(playlistId);
+    return res.json(songs);
+  } catch (error) {
+    return next(error);
   }
 };
 
@@ -76,4 +123,5 @@ module.exports = {
   getPlaylistController,
   updatePlaylistController,
   deletePlaylistController,
+  getSongsInPlaylistController,
 };

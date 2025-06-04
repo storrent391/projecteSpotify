@@ -1,5 +1,5 @@
-const { poolPromise } = require("../config/db");
 const sql = require("mssql");
+const { poolPromise } = require("../config/db");
 
 const createPlaylist = async ({ name, userId }) => {
   const pool = await poolPromise;
@@ -15,7 +15,7 @@ const createPlaylist = async ({ name, userId }) => {
 
 const getAllPlaylists = async () => {
   const pool = await poolPromise;
-  const result = await pool.request().query("SELECT * FROM Playlists");
+  const result = await pool.request().query("SELECT * FROM Playlists ORDER BY CreatedAt DESC");
   return result.recordset;
 };
 
@@ -34,9 +34,12 @@ const updatePlaylist = async (id, { name }) => {
     .request()
     .input("Id", sql.UniqueIdentifier, id)
     .input("Name", sql.VarChar, name)
-    .query(
-      "UPDATE Playlists SET Name = @Name WHERE Id = @Id; SELECT * FROM Playlists WHERE Id = @Id"
-    );
+    .query(`
+      UPDATE Playlists 
+      SET Name = @Name 
+      WHERE Id = @Id;
+      SELECT * FROM Playlists WHERE Id = @Id
+    `);
   return result.recordset[0];
 };
 
