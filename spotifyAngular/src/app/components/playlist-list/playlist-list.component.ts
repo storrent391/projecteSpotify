@@ -11,7 +11,7 @@ import { Playlist } from '../../models/playlist.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './playlist-list.component.html',
-  styleUrls: ['./playlist-list.component.scss']
+  styleUrls: ['./playlist-list.component.css']
 })
 export class PlaylistListComponent implements OnInit {
   playlists: Playlist[] = [];

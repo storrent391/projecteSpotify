@@ -1,7 +1,7 @@
 // src/app/services/song.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { environment } from '../environments/environment';
 import { Song } from '../models/song.model';
 import { Observable } from 'rxjs';
 

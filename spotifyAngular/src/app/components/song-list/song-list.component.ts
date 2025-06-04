@@ -12,7 +12,7 @@ import { Song } from '../../models/song.model';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './song-list.component.html',
-  styleUrls: ['./song-list.component.scss']
+  styleUrls: ['./song-list.component.css']
 })
 export class SongListComponent implements OnInit {
   songs: Song[] = [];

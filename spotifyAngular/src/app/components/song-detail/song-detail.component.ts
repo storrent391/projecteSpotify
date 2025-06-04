@@ -11,7 +11,7 @@ import { Song } from '../../models/song.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './song-detail.component.html',
-  styleUrls: ['./song-detail.component.scss']
+  styleUrls: ['./song-detail.component.css']
 })
 export class SongDetailComponent implements OnInit {
   song?: Song;
