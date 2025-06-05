@@ -1,29 +1,72 @@
 <!-- src/app/components/playlists/playlist-detail/playlist-detail.component.html -->
-<div *ngIf="playlist; else notFound">
-  <h2>{{ playlist.name }}</h2>
-  <p>Creada: {{ playlist.createdAt | date:'short' }}</p>
-  <p>Usuari propietari: {{ playlist.userId }}</p>
+<div class="playlist-detail-container">
+  <h2>Detall de la Playlist</h2>
 
-  <button *ngIf="isOwner" routerLink="/playlists/{{ playlist.id }}/edit">Editar Playlist</button>
-  <button *ngIf="isOwner" (click)="deletePlaylist()">Esborrar Playlist</button>
+  <div *ngIf="playlist">
+    <h3>{{ playlist.name }}</h3>
+    <p>ID: {{ playlist.id }} • Creada: {{ playlist.createdAt | date: 'short' }}</p>
+  </div>
 
-  <hr />
+  <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
 
-  <h3>Cançons a la playlist</h3>
+  <h4>Cançons a la playlist:</h4>
   <ul>
-    <li *ngFor="let song of songs">
-      {{ song.title }} — {{ song.artist }}
-      <button *ngIf="isOwner" (click)="removeSong(song.id)">Eliminar</button>
+    <li *ngFor="let song of songsInPlaylist" class="song-item">
+      <div class="song-info">
+        <a [routerLink]="['/songs', song.id]">
+          {{ song.title }} — {{ song.artist }}<br />
+          <small>ID: {{ song.id }}</small>
+        </a>
+      </div>
+      <div class="song-actions" *ngIf="isOwner">
+        <button
+          (click)="deleteSongFromPlaylist(song.id)"
+          class="delete-button"
+          [attr.aria-label]="'Eliminar ' + song.title"
+        >
+          Eliminar
+        </button>
+      </div>
     </li>
   </ul>
 
-  <div *ngIf="isOwner" class="add-song-form">
-    <h4>Afegir cançó a la playlist</h4>
-    <input type="text" placeholder="ID de la cançó" [(ngModel)]="newSongId" />
-    <button (click)="addSong()" [disabled]="!newSongId">Afegir</button>
+  <div *ngIf="isOwner" class="add-song-section">
+    <h4>Afegir cançó per títol:</h4>
+
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="Buscar per títol..."
+        [(ngModel)]="querySongTitle"
+        aria-label="Buscar cançó per títol"
+      />
+      <button (click)="searchSongByTitle()">Cerca</button>
+    </div>
+
+    <p *ngIf="searchError" class="error">{{ searchError }}</p>
+
+    <ul *ngIf="searchResults.length > 0" class="search-results">
+      <li *ngFor="let result of searchResults" class="result-item">
+        <input
+          type="radio"
+          name="selectedSong"
+          [value]="result.id"
+          [(ngModel)]="selectedSongId"
+          id="{{ 'song-' + result.id }}"
+        />
+        <label for="{{ 'song-' + result.id }}">
+          {{ result.title }} — {{ result.artist }}<br />
+          <small>ID: {{ result.id }}</small>
+        </label>
+      </li>
+    </ul>
+
+    <button
+      (click)="addSelectedSong()"
+      [disabled]="!selectedSongId"
+      class="add-button"
+    >
+      Afegir a la playlist
+    </button>
   </div>
 </div>
-
-<ng-template #notFound>
-  <p class="error">Playlist no trobada.</p>
-</ng-template>

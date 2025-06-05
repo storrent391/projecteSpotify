@@ -1,54 +1,65 @@
-// src/app/services/song.service.ts
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from '../environments/environment';
+// **2. Ajusta `SongService` perquè mapegi les propietats retornades pel backend (que arriben com a `Id`, `Title`, `Artist`, `UserId`) a les propietats en minúscules (id, title, artist, userId).**
+// spotifyAngular/src/app/services/song.service.ts
+
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { Song } from '../models/song.model';
-import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SongService {
+  private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/songs`;
 
-  constructor(private http: HttpClient) { }
-
-  // Obtenir totes les cançons (amb paginació opcional)
-  getSongs(page: number = 1, limit: number = 20): Observable<Song[]> {
-    let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
-    return this.http.get<Song[]>(this.apiUrl, { params });
+  /** 
+   * Mappeja un objecte cru ({"Id": "...", "Title": "...", ...}) a l’objecte Song correcte.
+   */
+  private mapRawToSong(raw: any): Song {
+    return {
+      id: raw.Id,
+      title: raw.Title,
+      artist: raw.Artist,
+      userId: raw.UserId
+    };
   }
 
-  // Cercar cançons per query params
+  getSongs(page: number, limit: number): Observable<Song[]> {
+    return this.http
+      .get<any[]>(`${this.apiUrl}?page=${page}&limit=${limit}`)
+      .pipe(map(rawList => rawList.map(raw => this.mapRawToSong(raw))));
+  }
+
   searchSongs(title?: string, artist?: string): Observable<Song[]> {
-    let params = new HttpParams();
-    if (title) {
-      params = params.set('title', title);
-    }
-    if (artist) {
-      params = params.set('artist', artist);
-    }
-    return this.http.get<Song[]>(`${this.apiUrl}/search`, { params });
+    let queryParams = '';
+    if (title) queryParams += `title=${encodeURIComponent(title)}&`;
+    if (artist) queryParams += `artist=${encodeURIComponent(artist)}&`;
+    if (queryParams.endsWith('&')) queryParams = queryParams.slice(0, -1);
+
+    return this.http
+      .get<any[]>(`${this.apiUrl}/search?${queryParams}`)
+      .pipe(map(rawList => rawList.map(raw => this.mapRawToSong(raw))));
   }
 
-  // Obtenir cançó per id
   getSongById(id: string): Observable<Song> {
-    return this.http.get<Song>(`${this.apiUrl}/${id}`);
+    return this.http
+      .get<any>(`${this.apiUrl}/${id}`)
+      .pipe(map(raw => this.mapRawToSong(raw)));
   }
 
-  // Crear cançó (requereix JWT)
-  createSong(title: string, artist: string): Observable<Song> {
-    const body = { title, artist };
-    return this.http.post<Song>(this.apiUrl, body);
+  addSong(data: { title: string; artist: string }): Observable<Song> {
+    return this.http
+      .post<any>(this.apiUrl, data)
+      .pipe(map(raw => this.mapRawToSong(raw)));
   }
 
-  // Actualitzar cançó per id (requereix JWT)
-  updateSong(id: string, data: { title?: string; artist?: string }): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+  updateSong(id: string, data: { title?: string; artist?: string }): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, data);
   }
 
-  // Esborrar cançó per id (requereix JWT)
-  deleteSong(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deleteSong(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

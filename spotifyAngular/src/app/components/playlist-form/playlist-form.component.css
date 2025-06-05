@@ -1,0 +1,64 @@
+/* src/app/components/playlists/playlist-form/playlist-form.component.css */
+.playlist-form-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  background-color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+.playlist-form-container h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.playlist-form-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  margin-bottom: 0.3rem;
+  font-weight: bold;
+  color: #34495e;
+}
+
+.form-group input {
+  padding: 0.5rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 3px;
+  font-size: 1rem;
+}
+
+.playlist-form-container button {
+  padding: 0.6rem;
+  background-color: #2980b9;
+  border: none;
+  color: #ecf0f1;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+}
+
+.playlist-form-container button:disabled {
+  background-color: #7f8c8d;
+  cursor: not-allowed;
+}
+
+.playlist-form-container button:hover:not(:disabled) {
+  background-color: #1f6391;
+}
+
+.error {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}

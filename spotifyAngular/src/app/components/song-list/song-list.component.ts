@@ -1,4 +1,6 @@
-// src/app/components/songs/song-list/song-list.component.ts
+// **3. Assegura’t que `SongListComponent` mostri correctament `song.id` (UUID) i les altres propietats.**
+// spotifyAngular/src/app/components/songs/song-list/song-list.component.ts
+
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

@@ -1,14 +1,32 @@
-<!-- src/app/components/playlists/playlist-list/playlist-list.component.html -->
+
 <div class="playlist-list-container">
   <h2>Playlists</h2>
- 
-  <button routerLink="/playlists/new" *ngIf="isLoggedIn">Nova Playlist</button>
+
+  <button routerLink="/playlists/new" *ngIf="isLoggedIn" class="new-button">
+    Nova Playlist
+  </button>
+
+  <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
 
   <ul>
-    <li *ngFor="let pl of playlists">
-      <a [routerLink]="['/playlists', pl.id]">
-        {{ pl.name }} ({{ pl.createdAt | date:'short' }})
-      </a>
+    <li *ngFor="let playlist of playlists" class="playlist-item">
+      <div class="playlist-info">
+        <a [routerLink]="['/playlists', playlist.id]">
+          <strong>{{ playlist.name }}</strong><br />
+          <small>ID: {{ playlist.id }}</small> •
+          <small>Creada: {{ playlist.createdAt | date:'short' }}</small>
+        </a>
+      </div>
+      <div class="playlist-actions">
+        <button
+          *ngIf="isOwner(playlist)"
+          (click)="deletePlaylist(playlist.id)"
+          class="delete-button"
+          [attr.aria-label]="'Esborrar ' + playlist.name"
+        >
+          Esborrar
+        </button>
+      </div>
     </li>
   </ul>
 </div>
