@@ -21,7 +21,6 @@ Aplicació full-stack amb **Node.js/Express** (backend) i **Angular** (frontend 
 6. [Endpoints del backend](#endpoints-del-backend)  
 7. [Funcionalitats principals](#funcionalitats-principals)  
 8. [Usabilitat i accessibilitat](#usabilitat-i-accessibilitat)  
-9. [Membres del projecte](#membres-del-projecte)  
 
 ---
 
@@ -144,26 +143,25 @@ projecteSpotify/
     │
     ├── package.json
     └── tsconfig.json
-Requeriments
-Backend
+## Requeriments
 
-Node.js ≥ 16
+- **Backend**  
+  - Node.js ≥ 16  
+  - SQL Server (o Azure SQL)  
 
-SQL Server (o Azure SQL)
+- **Frontend**  
+  - Node.js ≥ 16  
+  - Angular CLI ≥ 15  
 
-Frontend
+---
 
-Node.js ≥ 16
+## Configuració i arrencada del backend
 
-Angular CLI ≥ 15
+### 4.1. Variables d’entorn
 
-Configuració i arrencada del backend
-4.1. Variables d’entorn
-Crea un fitxer .env a la carpeta backend/ amb aquestes variables:
+Crea un fitxer `.env` a la carpeta `backend/` amb aquestes variables:
 
-bash
-Copiar
-Editar
+```bash
 PORT=5000
 
 DB_SERVER=<el_servidor_sql>
@@ -175,6 +173,9 @@ DB_ENCRYPT=true             # “true” o “false” segons TLS
 DB_TRUST_SERVER_CERTIFICATE=true
 
 JWT_SECRET=<clau_super_secreta>
+
+---
+
 4.2. Instal·lació de dependències
 Obre terminal, ves a backend/ i executa:
 
@@ -186,579 +187,454 @@ Les dependències principals inclouen:
 
 express, cors, dotenv
 
-mssql per connectar a SQL Server
+mssql (per connectar a SQL Server)
 
 bcryptjs, jsonwebtoken, express-validator
 
 4.3. Arrencada del servidor
+Després d’haver configurat el .env i instal·lat dependències:
+
 bash
 Copiar
 Editar
 node app.js
-O, si instal·les nodemon:
+O, si utilitzes nodemon per a recarregar en calent:
 
 bash
 Copiar
 Editar
 npx nodemon app.js
-Si tot funciona correctament, veuràs:
+Si tot funciona correctament, hauràs de veure a la consola:
 
 bash
 Copiar
 Editar
 🟢 Connected to SQL Server
 ✅ Servidor en execució a http://localhost:5000
-Configuració i arrencada del frontend Angular
-5.1. Variables d’entorn
-A spotifyAngular/src/environments/ crea (o modifica) aquests fitxers:
 
-ts
-Copiar
-Editar
-// src/environments/environment.ts
-export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:5000/api'
-};
-ts
-Copiar
-Editar
-// src/environments/environment.prod.ts
-export const environment = {
-  production: true,
-  apiUrl: 'http://localhost:5000/api'
-};
-5.2. Instal·lació de dependències
-Obre terminal i ves a spotifyAngular/:
-
-bash
-Copiar
-Editar
-npm install
-Instal·la paquets auxiliars (si cal):
-
-bash
-Copiar
-Editar
-npm install @angular/forms @auth0/angular-jwt
-5.3. Estructura de fitxers
-Els punts clau de la carpeta spotifyAngular/src/app/ (ubicació per defecte):
-
-app.routes.ts
-
-Defineix totes les rutes amb provideRouter([...]) a main.ts.
-
-app.component.ts / app.component.html / app.component.css
-
-Shell principal que inclou la barra de navegació i el <router-outlet>.
-
-core/
-
-(Opcional) Lògica o mòduls compartits.
-
-guards/auth.guard.ts
-
-CanActivateFn que bloqueja rutes protegides si no hi ha token.
-
-interceptors/jwt.interceptor.ts
-
-HttpInterceptor per afegir JWT a cada petició HTTP.
-
-models/
-
-user.model.ts, auth-response.model.ts, song.model.ts, playlist.model.ts.
-
-services/
-
-auth.service.ts (registre, login, logout, update, delete).
-
-song.service.ts (CRUD cançons + cerca).
-
-playlist.service.ts (CRUD playlists + gestió cançons dins playlist).
-
-components/
-
-home/
-
-home.component.ts, home.component.html, home.component.css.
-
-auth/
-
-login/ (login.component.ts, login.component.html, login.component.css)
-
-register/ (register.component.ts, register.component.html, register.component.css)
-
-songs/
-
-song-list/ (song-list.component.ts, song-list.component.html, song-list.component.css)
-
-song-detail/ (song-detail.component.ts, song-detail.component.html, song-detail.component.css)
-
-song-form/ (song-form.component.ts, song-form.component.html, song-form.component.css)
-
-song-form-component/ (opcional duplicat)
-
-playlists/
-
-playlist-list/ (playlist-list.component.ts, playlist-list.component.html, playlist-list.component.css)
-
-playlist-detail/ (playlist-detail.component.ts, playlist-detail.component.html, playlist-detail.component.css)
-
-playlist-form/ (playlist-form.component.ts, playlist-form.component.html, playlist-form.component.css)
-
-Nota: Cada component és standalone: true i importa explícitament CommonModule, FormsModule, RouterModule, etc.
-
+---
 5.4. Arrencada de l’aplicació
+Des d’un terminal, dins de spotifyAngular/, executa:
+
 bash
 Copiar
 Editar
 ng serve
 Després, obre el navegador a http://localhost:4200.
 
-Endpoints del backend
-Els endpoints retornen JSON i utilitzen JWT per a rutes protegides. Totes les rutes estan prefixades amb /api.
-
-1. Autenticació (/api/auth)
-POST /api/auth/register
-
-Body:
-
-json
-Copiar
-Editar
-{
-  "username": "jordi",
-  "email": "jordi@example.com",
-  "password": "password123"
-}
-Response 201:
-
-json
-Copiar
-Editar
-{
-  "message": "Usuari creat amb èxit",
-  "user": {
-    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    "username": "jordi",
-    "email": "jordi@example.com"
-  }
-}
-POST /api/auth/login
-
-Body:
-
-json
-Copiar
-Editar
-{
-  "email": "jordi@example.com",
-  "password": "password123"
-}
-Response 200:
-
-json
-Copiar
-Editar
-{
-  "message": "Login correcte",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-PUT /api/auth/update (auth required)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Body (opcional):
-
-json
-Copiar
-Editar
-{
-  "username": "nouNom",
-  "email": "nou@example.com",
-  "password": "novaPass456"
-}
-Response 200:
-
-json
-Copiar
-Editar
-{
-  "message": "Usuari actualitzat correctament",
-  "user": {
-    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    "username": "nouNom",
-    "email": "nou@example.com"
-  }
-}
-DELETE /api/auth/delete (auth required)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Body:
-
-json
-Copiar
-Editar
-{}
-Response 200:
-
-json
-Copiar
-Editar
-{ "message": "Usuari eliminat correctament" }
-2. Cançons (/api/songs)
-GET /api/songs?page=<n>&limit=<m>
-
-Llista paginada de cançons.
-
-Response 200:
-
-json
-Copiar
-Editar
-[
-  { "id": "uuid-1", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" },
-  { "id": "uuid-2", "title": "Hey Jude", "artist": "The Beatles", "userId": "user-uuid" }
-  // …
-]
-GET /api/songs/search?title=<t>&artist=<a>
-
-Cerca per títol i/o artista (LIKE).
-
-Response 200: array de cançons que coincideixin (JSON).
-
-GET /api/songs/:id
-
-Obté detall d’una cançó concreta.
-
-Response 200:
-
-json
-Copiar
-Editar
-{ "id": "uuid", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" }
-POST /api/songs (auth required)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Body:
-
-json
-Copiar
-Editar
-{ "title": "Imagine", "artist": "John Lennon" }
-Response 201:
-
-json
-Copiar
-Editar
-{ "id": "nou-uuid", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" }
-PUT /api/songs/:id (auth + owner)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Body (almenys un camp):
-
-json
-Copiar
-Editar
-{ "title": "Imagine (Remastered)" }
-Response 200:
-
-json
-Copiar
-Editar
-{ "message": "Cançó actualitzada correctament" }
-DELETE /api/songs/:id (auth + owner)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Response 200:
-
-json
-Copiar
-Editar
-{ "message": "Cançó eliminada amb èxit" }
-3. Playlists (/api/playlists)
-GET /api/playlists
-
-Llista de totes les playlists.
-
-Response 200:
-
-json
-Copiar
-Editar
-[
-  { "id": "pl-uuid-1", "name": "Road Trip 2025", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" },
-  { "id": "pl-uuid-2", "name": "My Favorites", "userId": "user-uuid", "createdAt": "2025-06-03T09:20:15.123Z" }
-  // …
-]
-GET /api/playlists/:id
-
-Detall d’una playlist concreta.
-
-Response 200:
-
-json
-Copiar
-Editar
-{ "id": "pl-uuid-1", "name": "Road Trip 2025", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
-POST /api/playlists (auth required)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Body:
-
-json
-Copiar
-Editar
-{ "name": "Road Trip 2025" }
-Response 201:
-
-json
-Copiar
-Editar
-{ "id": "nou-pl-uuid", "name": "Road Trip 2025", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
-PUT /api/playlists/:id (auth + owner)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Body:
+---
+
+## Endpoints del backend
+
+Els endpoints retornen JSON i utilitzen JWT per a rutes protegides. Totes les rutes estan prefixades amb `/api`.
+
+### 6.1. Autenticació (`/api/auth`)
+
+- **POST /api/auth/register**  
+  - **Body**:
+    ```json
+    {
+      "username": "jordi",
+      "email": "jordi@example.com",
+      "password": "password123"
+    }
+    ```
+  - **Response 201**:
+    ```json
+    {
+      "message": "Usuari creat amb èxit",
+      "user": {
+        "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "username": "jordi",
+        "email": "jordi@example.com"
+      }
+    }
+    ```
+
+- **POST /api/auth/login**  
+  - **Body**:
+    ```json
+    {
+      "email": "jordi@example.com",
+      "password": "password123"
+    }
+    ```
+  - **Response 200**:
+    ```json
+    {
+      "message": "Login correcte",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
+    ```
+
+- **PUT /api/auth/update** (auth required)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Body (opcional)**:
+    ```json
+    {
+      "username": "nouNom",
+      "email": "nou@example.com",
+      "password": "novaPass456"
+    }
+    ```
+  - **Response 200**:
+    ```json
+    {
+      "message": "Usuari actualitzat correctament",
+      "user": {
+        "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "username": "nouNom",
+        "email": "nou@example.com"
+      }
+    }
+    ```
+
+- **DELETE /api/auth/delete** (auth required)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Body**:
+    ```json
+    {}
+    ```
+  - **Response 200**:
+    ```json
+    { "message": "Usuari eliminat correctament" }
+    ```
+
+---
+
+### 6.2. Cançons (`/api/songs`)
+
+- **GET /api/songs?page=<n>&limit=<m>**  
+  - Llista paginada de cançons.  
+  - **Response 200**:
+    ```json
+    [
+      { "id": "uuid-1", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" },
+      { "id": "uuid-2", "title": "Hey Jude", "artist": "The Beatles", "userId": "user-uuid" }
+      // …
+    ]
+    ```
+
+- **GET /api/songs/search?title=<t>&artist=<a>**  
+  - Cerca per títol i/o artista (LIKE).  
+  - **Response 200**: array de cançons que coincideixin.
+
+- **GET /api/songs/:id**  
+  - Obté detall d’una cançó concreta.  
+  - **Response 200**:
+    ```json
+    { "id": "uuid", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" }
+    ```
+
+- **POST /api/songs** (auth required)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Body**:
+    ```json
+    { "title": "Imagine", "artist": "John Lennon" }
+    ```
+  - **Response 201**:
+    ```json
+    { "id": "nou-uuid", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" }
+    ```
+
+- **PUT /api/songs/:id** (auth + owner)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Body (almenys un camp)**:
+    ```json
+    { "title": "Imagine (Remastered)" }
+    ```
+  - **Response 200**:
+    ```json
+    { "message": "Cançó actualitzada correctament" }
+    ```
+
+- **DELETE /api/songs/:id** (auth + owner)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Response 200**:
+    ```json
+    { "message": "Cançó eliminada amb èxit" }
+    ```
+
+---
+
+### 6.3. Playlists (`/api/playlists`)
+
+- **GET /api/playlists**  
+  - Llista de totes les playlists.  
+  - **Response 200**:
+    ```json
+    [
+      { "id": "pl-uuid-1", "name": "Road Trip 2025", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" },
+      { "id": "pl-uuid-2", "name": "My Favorites", "userId": "user-uuid", "createdAt": "2025-06-03T09:20:15.123Z" }
+      // …
+    ]
+    ```
+
+- **GET /api/playlists/:id**  
+  - Detall d’una playlist concreta.  
+  - **Response 200**:
+    ```json
+    { "id": "pl-uuid-1", "name": "Road Trip 2025", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
+    ```
+
+- **POST /api/playlists** (auth required)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Body**:
+    ```json
+    { "name": "Road Trip 2025" }
+    ```
+  - **Response 201**:
+    ```json
+    { "id": "nou-pl-uuid", "name": "Road Trip 2025", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
+    ```
+
+- **PUT /api/playlists/:id** (auth + owner)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Body**:
+    ```json
+    { "name": "Road Trip 2025 - Updated" }
+    ```
+  - **Response 200**:
+    ```json
+    { "id": "pl-uuid-1", "name": "Road Trip 2025 - Updated", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
+    ```
+
+- **DELETE /api/playlists/:id** (auth + owner)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Response 200**:
+    ```json
+    { "message": "Playlist eliminada amb èxit" }
+    ```
+
+- **GET /api/playlists/:playlistId/songs**  
+  - Llista de cançons que pertanyen a una playlist.  
+  - **Response 200**:
+    ```json
+    [
+      { "id": "song-uuid-1", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" },
+      { "id": "song-uuid-2", "title": "Hey Jude", "artist": "The Beatles", "userId": "user2-uuid" }
+      // …
+    ]
+    ```
+
+- **POST /api/playlists/:playlistId/songs** (auth + owner)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Body**:
+    ```json
+    { "songId": "song-uuid-1" }
+    ```
+  - **Response 201**:
+    ```json
+    { "playlistId": "pl-uuid-1", "songId": "song-uuid-1", "addedAt": "2025-06-04T12:35:30.123Z" }
+    ```
+
+- **DELETE /api/playlists/:playlistId/songs/:songId** (auth + owner)  
+  - **Headers**:
+    ```
+    Authorization: Bearer <token>
+    ```
+  - **Response 200**:
+    ```json
+    { "message": "Cançó eliminada de la playlist amb èxit" }
+    ```
+---
+
+## Funcionalitats principals
+
+1. **Autenticació amb JWT**  
+   - Tots els endpoints protegits requereixen header `Authorization: Bearer <token>`.  
+   - El middleware `authMiddleware` a `backend/middleware/authMiddleware.js` verifica la signatura del token i desa `req.user` amb `{ Id, Email }`.
+
+2. **Gestió de cançons**  
+   - **Llistat/paginació**:  
+     - La funció `getAllSongs({ page, limit })` fa servir SQL Server amb `OFFSET ... FETCH NEXT ...` per retornar una pàgina de cançons.  
+   - **Cerca**:  
+     - La ruta `GET /api/songs/search?title=<t>&artist=<a>` implementa la cerca amb `WHERE Title LIKE '%<t>%' AND Artist LIKE '%<a>%'`.  
+   - **CRUD**:  
+     - **Crear**: `POST /api/songs` amb cos `{ "title": "...", "artist": "..." }` crea una nova cançó amb `INSERT ... OUTPUT INSERTED.*`.  
+     - **Llegir**:  
+       - `GET /api/songs` retorna totes (paginades).  
+       - `GET /api/songs/:id` retorna la cançó per `id` (o per títol).  
+     - **Actualitzar**: `PUT /api/songs/:id` accepta `{ "title"?: "...", "artist"?: "..." }` i executa `UPDATE Songs SET ... WHERE Id = @Id`.  
+     - **Esborrar**: `DELETE /api/songs/:id` elimina la cançó amb `DELETE FROM Songs WHERE Id = @Id`.  
+   - **Angular**:  
+     - **`SongService`** a `spotifyAngular/src/app/services/song.service.ts`: mètodes `getSongs()`, `searchSongs()`, `getSongById()`, `addSong()`, `updateSong()`, `deleteSong()`.  
+     - **Components**:  
+       - **`song-list`**: mostra llistat de cançons amb cerca, paginació i botó “Esborrar” (només si `isOwner`).  
+       - **`song-detail`**: mostra detall d’una cançó amb botons “Editar”/“Esborrar” (només si `isOwner`).  
+       - **`song-form`**: formulari reactiu per a crear/editar cançons amb validacions (`Validators.required`).  
+
+3. **Gestió de playlists**  
+   - **CRUD de playlists**:  
+     - **Crear**: `POST /api/playlists` amb `{ "name": "..." }` fa `INSERT INTO Playlists (Name, UserId, CreatedAt)`.  
+     - **Llegir**:  
+       - `GET /api/playlists` retorna totes les playlists.  
+       - `GET /api/playlists/:id` retorna la playlist per `id`.  
+     - **Actualitzar**: `PUT /api/playlists/:id` amb `{ "name": "..." }` actualitza el camp `Name`.  
+     - **Esborrar**: `DELETE /api/playlists/:id` elimina la playlist.  
+   - **Gestió de cançons dins una playlist**:  
+     - **Llistar cançons d’una playlist**: `GET /api/playlists/:playlistId/songs` fa `SELECT` a `PlaylistSongs JOIN Songs`.  
+     - **Afegir cançó**: `POST /api/playlists/:playlistId/songs` amb `{ "songId": "..." }` fa `INSERT INTO PlaylistSongs (PlaylistId, SongId, AddedAt)`.  
+     - **Eliminar cançó**: `DELETE /api/playlists/:playlistId/songs/:songId` fa `DELETE FROM PlaylistSongs WHERE PlaylistId=@playlistId AND SongId=@songId`.  
+   - **Angular**:  
+     - **`PlaylistService`** a `spotifyAngular/src/app/services/playlist.service.ts`: mètodes `getPlaylists()`, `getPlaylistById()`, `addPlaylist()`, `updatePlaylist()`, `deletePlaylist()`, `getSongsInPlaylist()`, `addSongToPlaylist()`, `removeSongFromPlaylist()`.  
+     - **Components**:  
+       - **`playlist-list`**: mostra llistat de playlists i botó “Nova Playlist” (si `isLoggedIn`).  
+       - **`playlist-detail`**: mostra detall d’una playlist amb llista de cançons, formulari per afegir cançó i botó “Eliminar cançó”.  
+       - **`playlist-form`**: formulari per crear/editar playlists amb validacions.  
+
+4. **Frontend Angular**  
+   - **Standalone Components**:  
+     - No es fa servir `AppModule`. Tots els components tenen `standalone: true` i importen explícitament els mòduls necessaris (`CommonModule`, `FormsModule`, `RouterModule`).  
+   - **`main.ts`**:  
+     - Línia clau:  
+       ```ts
+       bootstrapApplication(AppComponent, {
+         providers: [
+           provideHttpClient(withInterceptorsFromDi()),
+           provideRouter(routes),
+           {
+             provide: HTTP_INTERCEPTORS,
+             useClass: JwtInterceptor,
+             multi: true
+           }
+         ]
+       });
+       ```  
+     - Això arrenca l’aplicació, proveeix el client HTTP amb interceptors i registra les rutes.  
+   - **Interceptor JWT** (`spotifyAngular/src/app/interceptors/jwt.interceptor.ts`):  
+     - Afegeix el token a cada petició HTTP si existeix a `localStorage`.  
+   - **AuthGuard** (`spotifyAngular/src/app/guards/auth.guard.ts`):  
+     - `CanActivateFn` que comprova si hi ha token abans de permetre accedir a rutes protegides (`/songs/new`, `/playlists/new`, etc.).  
+   - **Rutes** (`spotifyAngular/src/app/app.routes.ts`):  
+     - Exemple:
+       ```ts
+       export const routes: Routes = [
+         { path: '', component: HomeComponent },
+         { path: 'login', component: LoginComponent },
+         { path: 'register', component: RegisterComponent },
+         {
+           path: 'songs',
+           children: [
+             { path: '', component: SongListComponent },
+             { path: 'new', component: SongFormComponent, canActivate: [AuthGuard] },
+             { path: ':id', component: SongDetailComponent },
+             { path: ':id/edit', component: SongFormComponent, canActivate: [AuthGuard] }
+           ]
+         },
+         {
+           path: 'playlists',
+           children: [
+             { path: '', component: PlaylistListComponent },
+             { path: 'new', component: PlaylistFormComponent, canActivate: [AuthGuard] },
+             { path: ':id', component: PlaylistDetailComponent },
+             { path: ':id/edit', component: PlaylistFormComponent, canActivate: [AuthGuard] }
+           ]
+         },
+         { path: '**', redirectTo: '' }
+       ];
+       ```
+   - **Estils CSS**:  
+     - Cada component té el seu fitxer `.css` amb estils senzills i contrast adequat per a accessibilitat.  
+
+```markdown
+---
+
+## Usabilitat i accessibilitat
 
-json
-Copiar
-Editar
-{ "name": "Road Trip 2025 - Updated" }
-Response 200:
-
-json
-Copiar
-Editar
-{ "id": "pl-uuid-1", "name": "Road Trip 2025 - Updated", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
-DELETE /api/playlists/:id (auth + owner)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Response 200:
-
-json
-Copiar
-Editar
-{ "message": "Playlist eliminada amb èxit" }
-GET /api/playlists/:playlistId/songs
-
-Llista de cançons que pertanyen a una playlist.
-
-Response 200:
-
-json
-Copiar
-Editar
-[
-  { "id": "song-uuid-1", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" },
-  { "id": "song-uuid-2", "title": "Hey Jude", "artist": "The Beatles", "userId": "user2-uuid" }
-  // …
-]
-POST /api/playlists/:playlistId/songs (auth + owner)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Body:
-
-json
-Copiar
-Editar
-{ "songId": "song-uuid-1" }
-Response 201:
-
-json
-Copiar
-Editar
-{ "playlistId": "pl-uuid-1", "songId": "song-uuid-1", "addedAt": "2025-06-04T12:35:30.123Z" }
-DELETE /api/playlists/:playlistId/songs/:songId (auth + owner)
-
-Headers:
-
-makefile
-Copiar
-Editar
-Authorization: Bearer <token>
-Response 200:
-
-json
-Copiar
-Editar
-{ "message": "Cançó eliminada de la playlist amb èxit" }
-Funcionalitats principals
-Autenticació amb JWT
-
-Tots els endpoints protegits requereixen header Authorization: Bearer <token>.
-
-El middleware authMiddleware a backend/middleware/authMiddleware.js verifica i desa req.user amb { Id, Email }.
-
-Gestió de cançons
-
-Llistat/paginació: getAllSongs({ page, limit }) amb SQL Server OFFSET ... FETCH NEXT ....
-
-Cerca: searchSongs({ title, artist }) amb LIKE '%...%'.
-
-CRUD: Crear (INSERT ... OUTPUT INSERTED.*), actualitzar només camps canviats, esborrar per Id.
-
-Angular:
-
-SongService (a spotifyAngular/src/app/services/song.service.ts).
-
-Components:
-
-song-list (llista + cerca + paginació + esborrar si és owner).
-
-song-detail (detall + botons “Editar”/“Esborrar”).
-
-song-form (form per crear/editar amb validacions).
-
-Gestió de playlists
-
-CRUD de playlists amb timestamps CreatedAt.
-
-Associació Playlist–Song: taula PlaylistSongs(PlaylistId, SongId, AddedAt).
-
-Angular:
-
-PlaylistService (a spotifyAngular/src/app/services/playlist.service.ts).
-
-Components:
-
-playlist-list (llista, botó “Nova Playlist”).
-
-playlist-detail (detall + llista de cançons + formulari per afegir-ne + botó per esborrar cançó).
-
-playlist-form (form per crear/editar playlist).
-
-Frontend Angular
-
-Standalone Components: no s’utilitza AppModule. Tot ho arrenca bootstrapApplication a main.ts.
-
-Interceptor JWT (spotifyAngular/src/app/interceptors/jwt.interceptor.ts) afegeix el token a cada petició.
-
-AuthGuard (spotifyAngular/src/app/guards/auth.guard.ts) protegeix rutes que requereixen autenticació.
-
-Rutes definides a spotifyAngular/src/app/app.routes.ts i registrades a main.ts mitjançant provideRouter(routes).
-
-Estructura CSS: cada component té el seu fitxer .css amb estils senzills i contrast adequat.
-
-Usabilitat i accessibilitat
 S’ha implementat la majoria de bones pràctiques per complir tant els 10 principis d’usabilitat de Nielsen com les directrius WCAG:
 
-Visibilitat de l’estat del sistema
+1. **Visibilitat de l’estat del sistema**  
+   - Barra de navegació sempre visible, ressaltant l’estat “Login/Register” vs “Logout”.  
+   - Missatges d’error i confirmacions (“Segur que vols esborrar?”).
 
-Barra de navegació sempre visible, ressaltant l’estat “Login/Register” vs “Logout”.
+2. **Coincidència amb el món real**  
+   - Terminologia en català clara: “Cançons”, “Playlists”, “Entrar”, “Registra’t”.  
+   - Labels i **placeholders** descriptius en formularis.
 
-Missatges d’error i confirmacions (“Segur que vols esborrar?”).
+3. **Control i llibertat de l’usuari**  
+   - Navegació lliure mitjançant nav-bar.  
+   - Botó “Logout” accessible sempre.  
+   - Confirmacions per esborrar, per evitar accions accidentals.
 
-Coincidència amb el món real
+4. **Consistència i estàndards**  
+   - Estils uniformes per a botons, formularis i llistes.  
+   - Organització coherent de rutes (`/songs`, `/songs/:id`, `/songs/new`, `/songs/:id/edit` i `/playlists/...`).
 
-Terminologia en català clara: “Cançons”, “Playlists”, “Entrar”, “Registra’t”.
+5. **Prevenció d’errors**  
+   - Botons `:disabled` si el formulari no és vàlid.  
+   - Confirmacions a l’esborrar cançons i playlists.  
+   - Validacions del formulari amb missatges d’error immediats.
 
-Labels i placeholders descriptius.
+6. **Reconèixer en comptes de recordar**  
+   - Labels clarament associats amb inputs (`<label for="...">`).  
+   - Botons i enllaços mostrats en context (per exemple, “Esborrar” només si ets propietari).
 
-Control i llibertat de l’usuari
+7. **Flexibilitat i eficiència d’ús**  
+   - Navegació per teclat habilitada (`Tab`, `Enter`).  
+   - Rutes directes accessibles des de la barra d’URL.
 
-Navegació lliure mitjançant nav-bar.
+8. **Estètica i disseny minimalista**  
+   - Colors neutres i espais nets.  
+   - Contrast adequat sense excessos visuals.
 
-Botó “Logout” accessible sempre.
+9. **Ajuda en reconèixer, diagnosticar i recuperar-se d’errors**  
+   - Missatges d’error clars sota cada camp.  
+   - Si una ruta no existeix (`/songs/abc-invalid`), es mostra “Cançó no trobada”.
 
-Confirmacions per esborrar per evitar accions accidentals.
+10. **Documentació i ajuda**  
+    - README detallat amb instruccions.  
+    - Placeholders exemple en formularis.  
+    - Enllaços:  
+      - “Ja tens compte? Inicia sessió”  
+      - “Encara no tens compte? Registra’t”
 
-Consistència i estàndards
+### Directrius WCAG
 
-Estils uniformes per a botons, formularis i llistes.
+- **Perceptible**  
+  - Contrast ≥ 4.5:1 en colors de text sobre fons.  
+  - Utilització de `[attr.aria-label]` en botons d’esborrar (p. ex.: `[attr.aria-label]="'Esborrar ' + song.title"`).
 
-Organització coherent de rutes (/songs, /songs/:id, /songs/new, /songs/:id/edit i /playlists/...).
+- **Operable**  
+  - Navegació amb **Tab** i **Enter** per accedir i activar enllaços/botons.  
+  - Focus visible estès a enllaços i inputs.
 
-Prevenció d’errors
+- **Comprensible**  
+  - Formularis accessibles: cada `<input>` té un `<label for="...">`.  
+  - Missatges clars d’error i indicacions textuals (p. ex.: “Títol és obligatori”).
 
-Botons :disabled si el formulari no és vàlid.
+- **Robust**  
+  - HTML semàntic (`<nav>`, `<form>`, `<label>`, `<input>`, `<button>`, `<ul>`, `<li>`).  
+  - Components Angular compatibles amb lectors de pantalla (VoiceOver, NVDA).
 
-Confirmacions a l’esborrar cançons i playlists.
 
-Validacions del formulari amb missatges d’error immediats.
+---
 
-Reconèixer en comptes de recordar
-
-Labels clarament associats amb inputs (<label for="...">).
-
-Botons i enllaços mostrats en context (per exemple, “Esborrar” només si ets propietari).
-
-Flexibilitat i eficiència d’ús
-
-Navegació per teclat habilitada (Tab, Enter).
-
-Rutes directes accessibles des de la barra d’URL.
-
-Estètica i disseny minimalista
-
-Colors neutres i espais nets.
-
-Contrast adequat sense excessos visuals.
-
-Ajuda en reconèixer, diagnosticar i recuperar-se d’errors
-
-Missatges d’error clars sota cada camp.
-
-Si una ruta no existeix (/songs/abc-invalid), es mostra “Cançó no trobada”.
-
-Documentació i ajuda
-
-README detallat amb instruccions.
-
-Placeholders exemple en formularis.
-
-Links “Ja tens compte? Inicia sessió” i “Encara no tens compte? Registra’t”.
-
-Accessibilitat WCAG
-
-Perceptible: contrast ≥ 4.5:1, [attr.aria-label] en botons d’esborrar.
-
-Operable: navegació per teclat, focus visible.
-
-Comprensible: formularis amb label, missatges clars, placeholder.
-
-Robust: HTML semàntic (nav, form, label, input, button, ul, li) i compatible amb lectors de pantalla.
+**Gràcies per provar el projecte!**
