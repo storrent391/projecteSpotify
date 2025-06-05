@@ -1,0 +1,43 @@
+.playlist-list-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.playlist-list-container h2 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.playlist-list-container button {
+  margin-bottom: 1rem;
+  background-color: #2980b9;
+  border: none;
+  color: #ecf0f1;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.playlist-list-container button:hover {
+  background-color: #1f6391;
+}
+
+.playlist-list-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.playlist-list-container li {
+  margin-bottom: 0.5rem;
+}
+
+.playlist-list-container a {
+  color: #2980b9;
+  text-decoration: none;
+}
+
+.playlist-list-container a:hover {
+  text-decoration: underline;
+}

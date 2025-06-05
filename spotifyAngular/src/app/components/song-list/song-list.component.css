@@ -1,52 +1,119 @@
-/* Estilos generales */
-h2 {
-    text-align: center;
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  /* Lista de canciones */
-  ul {
-    list-style: none;
-    padding: 0;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  li {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin: 8px 0;
-    font-size: 18px;
-    font-weight: 500;
-    color: #444;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background-color 0.3s ease;
-  }
-  
-  li:hover {
-    background-color: #e3f2fd;
-    cursor: pointer;
-  }
-  
-  /* Mensaje cuando no hay canciones */
-  p {
-    text-align: center;
-    font-size: 18px;
-    color: #777;
-    font-style: italic;
-  }
-  
-  /* Responsive para móviles */
-  @media (max-width: 600px) {
-    li {
-      font-size: 16px;
-      padding: 8px 12px;
-    }
-  }
-  
+.song-list-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.song-list-container h2 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.search-bar input {
+  padding: 0.4rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 3px;
+  flex: 1;
+}
+
+.search-bar button {
+  padding: 0.4rem 0.8rem;
+  background-color: #2980b9;
+  border: none;
+  color: #ecf0f1;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.search-bar button:hover {
+  background-color: #1f6391;
+}
+
+.new-button {
+  margin-bottom: 1rem;
+  background-color: #27ae60;
+  border: none;
+  color: #ecf0f1;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.new-button:hover {
+  background-color: #1f8450;
+}
+
+.error {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+.song-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.song-info a {
+  color: #2980b9;
+  text-decoration: none;
+}
+
+.song-info a:hover {
+  text-decoration: underline;
+}
+
+
+.delete-button {
+  background-color: #c0392b;
+  border: none;
+  color: #ecf0f1;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+}
+
+.delete-button:hover {
+  background-color: #a02b24;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.pagination button {
+  padding: 0.4rem 0.8rem;
+  background-color: #34495e;
+  border: none;
+  color: #ecf0f1;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.pagination button:disabled {
+  background-color: #7f8c8d;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 1rem;
+}

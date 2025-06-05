@@ -1,0 +1,28 @@
+.home-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.home-container h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.home-container p {
+  font-size: 1rem;
+  color: #34495e;
+  margin-bottom: 0.5rem;
+}
+
+.home-container a {
+  color: #2980b9;
+  text-decoration: none;
+}
+
+.home-container a:hover {
+  text-decoration: underline;
+}

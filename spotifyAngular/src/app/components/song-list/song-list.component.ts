@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { SongService } from '../../services/song.service';
+import { AuthService } from '../../services/auth.service';
 import { Song } from '../../models/song.model';
 
 @Component({
@@ -20,8 +21,10 @@ export class SongListComponent implements OnInit {
   limit: number = 20;
   queryTitle: string = '';
   queryArtist: string = '';
+  errorMsg: string = '';
 
   private songService = inject(SongService);
+  private authService = inject(AuthService);
 
   ngOnInit(): void {
     this.loadSongs();
@@ -29,8 +32,13 @@ export class SongListComponent implements OnInit {
 
   loadSongs(): void {
     this.songService.getSongs(this.page, this.limit).subscribe({
-      next: data => this.songs = data,
-      error: err => console.error('Error al carregar cançons:', err)
+      next: data => {
+        this.songs = data;
+      },
+      error: err => {
+        console.error('Error al carregar cançons:', err);
+        this.errorMsg = 'No s’han pogut carregar les cançons';
+      }
     });
   }
 
@@ -41,8 +49,13 @@ export class SongListComponent implements OnInit {
       return;
     }
     this.songService.searchSongs(this.queryTitle, this.queryArtist).subscribe({
-      next: data => this.songs = data,
-      error: err => console.error('Error en la cerca de cançons:', err)
+      next: data => {
+        this.songs = data;
+      },
+      error: err => {
+        console.error('Error en la cerca de cançons:', err);
+        this.errorMsg = 'No s’han trobat cançons amb aquests criteris';
+      }
     });
   }
 
@@ -50,6 +63,7 @@ export class SongListComponent implements OnInit {
     this.page++;
     this.loadSongs();
   }
+
   prevPage(): void {
     if (this.page > 1) {
       this.page--;
@@ -57,8 +71,26 @@ export class SongListComponent implements OnInit {
     }
   }
 
-  // Getter per saber si l’usuari està loguejat
   get isLoggedIn(): boolean {
     return !!localStorage.getItem('jwtToken');
+  }
+
+  isOwner(song: Song): boolean {
+    const currentUser = this.authService.currentUser;
+    return currentUser ? currentUser.id === song.userId : false;
+  }
+
+  deleteSong(songId: string): void {
+    if (!confirm('Segur que vols eliminar aquesta cançó?')) return;
+
+    this.songService.deleteSong(songId).subscribe({
+      next: () => {
+        this.loadSongs();
+      },
+      error: err => {
+        console.error('Error en esborrar la cançó:', err);
+        this.errorMsg = 'No s’ha pogut eliminar la cançó';
+      }
+    });
   }
 }

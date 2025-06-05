@@ -3,19 +3,45 @@
   <h2>Cançons</h2>
 
   <div class="search-bar">
-    <input type="text" placeholder="Títol..." [(ngModel)]="queryTitle" />
-    <input type="text" placeholder="Artista..." [(ngModel)]="queryArtist" />
+    <input
+      type="text"
+      placeholder="Títol..."
+      [(ngModel)]="queryTitle"
+      aria-label="Buscar per títol"
+    />
+    <input
+      type="text"
+      placeholder="Artista..."
+      [(ngModel)]="queryArtist"
+      aria-label="Buscar per artista"
+    />
     <button (click)="search()">Cerca</button>
   </div>
 
-  <!-- Ara fem servir isLoggedIn en lloc de localStorage directament -->
-  <button routerLink="/songs/new" *ngIf="isLoggedIn">Nova cançó</button>
+  <button routerLink="/songs/new" *ngIf="isLoggedIn" class="new-button">
+    Nova cançó
+  </button>
+
+  <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
 
   <ul>
-    <li *ngFor="let song of songs">
-      <a [routerLink]="['/songs', song.id]">
-        {{ song.title }} — {{ song.artist }}
-      </a>
+    <li *ngFor="let song of songs" class="song-item">
+      <div class="song-info">
+        <a [routerLink]="['/songs', song.id]">
+          {{ song.title }} — {{ song.artist }}
+        </a>
+      </div>
+      <div class="song-actions">
+        <!-- Ara utilitzem [attr.aria-label] en lloc de aria-label directe -->
+        <button
+          *ngIf="isOwner(song)"
+          (click)="deleteSong(song.id)"
+          class="delete-button"
+          [attr.aria-label]="'Esborrar ' + song.title"
+        >
+          Esborrar
+        </button>
+      </div>
     </li>
   </ul>
 
