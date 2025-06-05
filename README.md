@@ -99,7 +99,7 @@ projecteSpotify/
     │       │   ├── home.component.html
     │       │   └── home.component.css
     │       │
-    │       ├── auth/
+    │       ├── 
     │       │   ├── login/
     │       │   │   ├── login.component.ts
     │       │   │   ├── login.component.html
@@ -109,7 +109,7 @@ projecteSpotify/
     │       │       ├── register.component.html
     │       │       └── register.component.css
     │       │
-    │       ├── songs/
+    │       ├── 
     │       │   ├── song-list/
     │       │   │   ├── song-list.component.ts
     │       │   │   ├── song-list.component.html
@@ -127,7 +127,7 @@ projecteSpotify/
     │       │       ├── song-form-component.component.html
     │       │       └── song-form-component.component.css
     │       │
-    │       └── playlists/
+    │       └── 
     │           ├── playlist-list/
     │           │   ├── playlist-list.component.ts
     │           │   ├── playlist-list.component.html
