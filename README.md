@@ -162,7 +162,7 @@ projecteSpotify/
 
 Crea un fitxer `.env` a la carpeta `backend/` amb aquestes variables:
 
-```bash
+```
 PORT=5000
 
 DB_SERVER=<el_servidor_sql>
@@ -174,16 +174,16 @@ DB_ENCRYPT=true             # “true” o “false” segons TLS
 DB_TRUST_SERVER_CERTIFICATE=true
 
 JWT_SECRET=<clau_super_secreta>
-
+````
 ---
 
 4.2. Instal·lació de dependències
 Obre terminal, ves a backend/ i executa:
-
-bash
+```bash
 Copiar
 Editar
 npm install
+```
 Les dependències principals inclouen:
 
 express, cors, dotenv
@@ -195,34 +195,36 @@ bcryptjs, jsonwebtoken, express-validator
 4.3. Arrencada del servidor
 Després d’haver configurat el .env i instal·lat dependències:
 
-bash
+```bash
 Copiar
 Editar
 node app.js
+```
 O, si utilitzes nodemon per a recarregar en calent:
 
-bash
+```bash
 Copiar
 Editar
 npx nodemon app.js
+```
 Si tot funciona correctament, hauràs de veure a la consola:
 
-bash
+```bash
 Copiar
 Editar
 🟢 Connected to SQL Server
 ✅ Servidor en execució a http://localhost:5000
-
+```
 ---
 5.4. Arrencada de l’aplicació
 Des d’un terminal, dins de spotifyAngular/, executa:
 
-bash
+```bash
 Copiar
 Editar
 ng serve
 Després, obre el navegador a http://localhost:4200.
-
+```
 ---
 
 ## Endpoints del backend
@@ -565,7 +567,7 @@ Els endpoints retornen JSON i utilitzen JWT per a rutes protegides. Totes les ru
    - **Estils CSS**:  
      - Cada component té el seu fitxer `.css` amb estils senzills i contrast adequat per a accessibilitat.  
 
-```markdown
+
 ---
 
 ## Usabilitat i accessibilitat
