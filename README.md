@@ -1,56 +1,45 @@
-Spotify Clone – README
-Aplicació full-stack amb Node.js/Express (backend) i Angular (frontend standalone components).
+# Spotify Clone – README
 
-ÍNDEX
-Descripció del projecte
+Aplicació full-stack amb **Node.js/Express** (backend) i **Angular** (frontend standalone components).
 
-Estructura de directoris
+---
 
-Requeriments
+## ÍNDEX
 
-Configuració i arrencada del backend
+1. [Descripció del projecte](#descripció-del-projecte)  
+2. [Estructura de directoris](#estructura-de-directoris)  
+3. [Requeriments](#requeriments)  
+4. [Configuració i arrencada del backend](#configuració-i-arrencada-del-backend)  
+   1. [Variables d’entorn](#41-variables-dentorn)  
+   2. [Instal·lació de dependències](#42-instal·lació-de-dependències)  
+   3. [Arrencada del servidor](#43-arrencada-del-servidor)  
+5. [Configuració i arrencada del frontend Angular](#configuració-i-arrencada-del-frontend-angular)  
+   1. [Variables d’entorn](#51-variables-dentorn)  
+   2. [Instal·lació de dependències](#52-instal·lació-de-dependències)  
+   3. [Estructura de fitxers](#53-estructura-de-fitxers)  
+   4. [Arrencada de l’aplicació](#54-arrencada-de-laplicació)  
+6. [Endpoints del backend](#endpoints-del-backend)  
+7. [Funcionalitats principals](#funcionalitats-principals)  
+8. [Usabilitat i accessibilitat](#usabilitat-i-accessibilitat)  
+9. [Membres del projecte](#membres-del-projecte)  
 
-4.1. Variables d’entorn
+---
 
-4.2. Instal·lació de dependències
+## Descripció del projecte
 
-4.3. Arrencada del servidor
-
-Configuració i arrencada del frontend Angular
-
-5.1. Variables d’entorn
-
-5.2. Instal·lació de dependències
-
-5.3. Estructura de fitxers
-
-5.4. Arrencada de l’aplicació
-
-Endpoints del backend
-
-Funcionalitats principals
-
-Usabilitat i accessibilitat
-
-Membres del projecte
-
-Descripció del projecte
 Aplicació tipus “Spotify Clone” que permet a usuaris:
 
-Registrar-se / Fer login amb JWT.
+- Registrar-se / Fer login amb JWT.  
+- **CRUD de cançons**: llistar, cercar, veure detall, crear, editar i esborrar.  
+- **CRUD de playlists**: llistar, veure detall, crear, editar, esborrar.  
+- Afegir/treure cançons a playlists.  
+- Interfície Angular “standalone components” que consumeix el backend via HTTP.  
 
-CRUD de cançons: llistar, cercar, veure detall, crear, editar i esborrar.
+---
 
-CRUD de playlists: llistar, veure detall, crear, editar, esborrar.
+## Estructura de directoris
 
-Afegir/treure cançons a playlists.
-
-Interfície Angular “standalone components” que consumeix el backend via HTTP.
-
-Estructura de directoris
-graphql
-Copiar
-Editar
+```plaintext
 projecteSpotify/
 │
 ├── backend/                      # Servidor Express + SQL Server
@@ -88,7 +77,7 @@ projecteSpotify/
     │   ├── main.ts               # bootstrapApplication + provides
     │   ├── index.html            # HTML principal
     │   ├── styles.css            # Estils globals
-    │   ├── app.config.ts         # Configuració global (si s'utilitza)
+    │   ├── app.config.ts         # Configuració global (si s’utilitza)
     │   ├── app.routes.ts         # Rutes Angular
     │   ├── core/                 # Mòduls o serveis compartits
     │   │   └── (ex. guarda de lògica compartida)
@@ -172,7 +161,7 @@ Configuració i arrencada del backend
 4.1. Variables d’entorn
 Crea un fitxer .env a la carpeta backend/ amb aquestes variables:
 
-ini
+bash
 Copiar
 Editar
 PORT=5000
@@ -214,7 +203,7 @@ Editar
 npx nodemon app.js
 Si tot funciona correctament, veuràs:
 
-pgsql
+bash
 Copiar
 Editar
 🟢 Connected to SQL Server
@@ -252,7 +241,7 @@ bash
 Copiar
 Editar
 npm install @angular/forms @auth0/angular-jwt
-5.3. Estructura de fitxers del frontend
+5.3. Estructura de fitxers
 Els punts clau de la carpeta spotifyAngular/src/app/ (ubicació per defecte):
 
 app.routes.ts
@@ -301,21 +290,21 @@ register/ (register.component.ts, register.component.html, register.component.cs
 
 songs/
 
-song-list/ (song-list.component.ts, .html, .css)
+song-list/ (song-list.component.ts, song-list.component.html, song-list.component.css)
 
-song-detail/ (song-detail.component.ts, .html, .css)
+song-detail/ (song-detail.component.ts, song-detail.component.html, song-detail.component.css)
 
-song-form/ (song-form.component.ts, .html, .css)
+song-form/ (song-form.component.ts, song-form.component.html, song-form.component.css)
 
 song-form-component/ (opcional duplicat)
 
 playlists/
 
-playlist-list/ (playlist-list.component.ts, .html, .css)
+playlist-list/ (playlist-list.component.ts, playlist-list.component.html, playlist-list.component.css)
 
-playlist-detail/ (playlist-detail.component.ts, .html, .css)
+playlist-detail/ (playlist-detail.component.ts, playlist-detail.component.html, playlist-detail.component.css)
 
-playlist-form/ (playlist-form.component.ts, .html, .css)
+playlist-form/ (playlist-form.component.ts, playlist-form.component.html, playlist-form.component.css)
 
 Nota: Cada component és standalone: true i importa explícitament CommonModule, FormsModule, RouterModule, etc.
 
@@ -377,8 +366,12 @@ Editar
 }
 PUT /api/auth/update (auth required)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Body (opcional):
 
 json
@@ -404,10 +397,18 @@ Editar
 }
 DELETE /api/auth/delete (auth required)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
-Body: {}
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
+Body:
 
+json
+Copiar
+Editar
+{}
 Response 200:
 
 json
@@ -447,8 +448,12 @@ Editar
 { "id": "uuid", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" }
 POST /api/songs (auth required)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Body:
 
 json
@@ -463,8 +468,12 @@ Editar
 { "id": "nou-uuid", "title": "Imagine", "artist": "John Lennon", "userId": "user-uuid" }
 PUT /api/songs/:id (auth + owner)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Body (almenys un camp):
 
 json
@@ -479,8 +488,12 @@ Editar
 { "message": "Cançó actualitzada correctament" }
 DELETE /api/songs/:id (auth + owner)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Response 200:
 
 json
@@ -514,8 +527,12 @@ Editar
 { "id": "pl-uuid-1", "name": "Road Trip 2025", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
 POST /api/playlists (auth required)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Body:
 
 json
@@ -530,8 +547,12 @@ Editar
 { "id": "nou-pl-uuid", "name": "Road Trip 2025", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
 PUT /api/playlists/:id (auth + owner)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Body:
 
 json
@@ -546,8 +567,12 @@ Editar
 { "id": "pl-uuid-1", "name": "Road Trip 2025 - Updated", "userId": "user-uuid", "createdAt": "2025-06-04T12:34:56.789Z" }
 DELETE /api/playlists/:id (auth + owner)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Response 200:
 
 json
@@ -570,8 +595,12 @@ Editar
 ]
 POST /api/playlists/:playlistId/songs (auth + owner)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Body:
 
 json
@@ -586,8 +615,12 @@ Editar
 { "playlistId": "pl-uuid-1", "songId": "song-uuid-1", "addedAt": "2025-06-04T12:35:30.123Z" }
 DELETE /api/playlists/:playlistId/songs/:songId (auth + owner)
 
-Headers: Authorization: Bearer <token>
+Headers:
 
+makefile
+Copiar
+Editar
+Authorization: Bearer <token>
 Response 200:
 
 json
@@ -678,11 +711,11 @@ Consistència i estàndards
 
 Estils uniformes per a botons, formularis i llistes.
 
-Organització coherent de rutes (/songs, /songs/:id, /songs/new, /songs/:id/edit i /playlists/…).
+Organització coherent de rutes (/songs, /songs/:id, /songs/new, /songs/:id/edit i /playlists/...).
 
 Prevenció d’errors
 
-Botons “:disabled” si el formulari no és vàlid.
+Botons :disabled si el formulari no és vàlid.
 
 Confirmacions a l’esborrar cançons i playlists.
 
@@ -690,7 +723,7 @@ Validacions del formulari amb missatges d’error immediats.
 
 Reconèixer en comptes de recordar
 
-Labels clarament associats amb inputs (<label for="…">).
+Labels clarament associats amb inputs (<label for="...">).
 
 Botons i enllaços mostrats en context (per exemple, “Esborrar” només si ets propietari).
 
@@ -726,6 +759,6 @@ Perceptible: contrast ≥ 4.5:1, [attr.aria-label] en botons d’esborrar.
 
 Operable: navegació per teclat, focus visible.
 
-Comprensible: formularis amb label, missatges clars, placeholders.
+Comprensible: formularis amb label, missatges clars, placeholder.
 
 Robust: HTML semàntic (nav, form, label, input, button, ul, li) i compatible amb lectors de pantalla.
