@@ -38,7 +38,7 @@ Aplicació tipus “Spotify Clone” que permet a usuaris:
 
 ## Estructura de directoris
 
-```plaintext
+```
 projecteSpotify/
 │
 ├── backend/                      # Servidor Express + SQL Server
@@ -143,7 +143,7 @@ projecteSpotify/
     │
     ├── package.json
     └── tsconfig.json
-```plaintext   
+```
 ## Requeriments
 
 - **Backend**  
