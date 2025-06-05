@@ -143,7 +143,7 @@ projecteSpotify/
     │
     ├── package.json
     └── tsconfig.json
-    plaintext´´´
+```plaintext   
 ## Requeriments
 
 - **Backend**  
