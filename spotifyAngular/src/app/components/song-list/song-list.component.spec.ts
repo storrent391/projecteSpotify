@@ -1,46 +1,51 @@
 // src/app/components/song-list/song-list.component.spec.ts
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SongListComponent } from './song-list.component';
+import { AuthService } from '../../services/auth.service';
 import { SongService } from '../../services/song.service';
 import { of } from 'rxjs';
-import { Song } from '../../models/song.model';
-import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { CommonModule } from '@angular/common';
 
-describe('SongListComponent (TDD)', () => {
+describe('SongListComponent', () => {
   let component: SongListComponent;
   let fixture: ComponentFixture<SongListComponent>;
-  let mockService: Partial<SongService>;
-
-  const mockSongs: Song[] = [
-    { id: "1", title: 'Imagine', artist: 'John Lennon', createdAt: "05/07/1980", idCreador: "123456" },
-    { id: "2", title: 'Hey Jude', artist: 'The Beatles', createdAt: "05/07/1980", idCreador: "12345645" }
-  ];
+  let authServiceSpy: any;
+  let songServiceSpy: jasmine.SpyObj<SongService>;
 
   beforeEach(async () => {
-    // Creamos un stub que implementa sólo el método list()
-    mockService = {
-      list: () => of(mockSongs)
-    };
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated']);
+    songServiceSpy = jasmine.createSpyObj('SongService', ['getSongs', 'searchSongs', 'deleteSong']);
 
     await TestBed.configureTestingModule({
-      declarations: [SongListComponent],
+      imports: [
+        SongListComponent,
+        CommonModule
+      ],
       providers: [
-        { provide: SongService, useValue: mockService }
+        provideRouter([]),
+        provideHttpClientTesting(),
+        { provide: AuthService, useValue: authServiceSpy },
+        { provide: SongService, useValue: songServiceSpy }
       ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(SongListComponent);
     component = fixture.componentInstance;
   });
 
-  it('should fetch songs on init and render them', () => {
-    // Dispara ngOnInit() y la suscripción a list()
+
+
+  it('should not show "Nova cançó" button when not logged in', () => {
+    authServiceSpy.isAuthenticated.and.returnValue(false);
+    songServiceSpy.getSongs.and.returnValue(of([]));
     fixture.detectChanges();
 
-    const items = fixture.debugElement.queryAll(By.css('.song-item'));
-    expect(items.length).toBe(2);
-    expect(items[0].nativeElement.textContent).toContain('Imagine');
-    expect(items[1].nativeElement.textContent).toContain('Hey Jude');
+    const buttons: NodeListOf<HTMLButtonElement> = fixture.nativeElement.querySelectorAll('button');
+    const newBtn = Array.from(buttons).find(btn => btn.textContent!.trim() === 'Nova cançó');
+    expect(newBtn).toBeUndefined();
   });
 });

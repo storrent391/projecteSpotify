@@ -1,4 +1,3 @@
-// **2. Ajusta `SongService` perquè mapegi les propietats retornades pel backend (que arriben com a `Id`, `Title`, `Artist`, `UserId`) a les propietats en minúscules (id, title, artist, userId).**
 // spotifyAngular/src/app/services/song.service.ts
 
 import { Injectable, inject } from '@angular/core';

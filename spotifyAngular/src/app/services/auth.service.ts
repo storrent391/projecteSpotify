@@ -25,6 +25,9 @@ export class AuthService {
   public get currentUser(): User | null {
     return this.currentUserSubject.value;
   }
+  public set currentUser(user){
+     this.currentUser = user
+  }
 
   register(username: string, email: string, password: string): Observable<any> {
     const body = { username, email, password };
